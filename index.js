@@ -68,6 +68,7 @@ class JDB{
         })
     }
     [_writeFile](value){
-        fs.writeFileSync(this['path'],JSON.stringify(value))
+        fs.writeFileSync(this['path'],JSON.stringify(value,null,'\t'))
     }
 }
+module.exports=JDB
