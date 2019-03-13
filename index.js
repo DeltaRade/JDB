@@ -7,7 +7,7 @@ class JDB{
 
     /**
      *Creates an instance of JDB.
-     *@param {string} table
+     *@param {string} table table to be used for saving/retrieving data from
      * @param {string} [path='.']
      */
     constructor(table,path='.'){
@@ -28,6 +28,14 @@ class JDB{
         this[_writeFile](this)
     }
 
+    /**
+     *  switches the table that the DB saves/retrieves data from
+     *
+     * @param {string} table table to switch to
+     */
+    switch(table){
+        this['table']=table
+    }
 
     /**
      *
@@ -72,3 +80,8 @@ class JDB{
     }
 }
 module.exports=JDB
+/*let x=new JDB('jobs')
+x.insert('engineer','defense')
+x.switch('users')
+console.log(x.obtain('gavriel'))
+console.log()*/
