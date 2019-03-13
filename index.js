@@ -18,8 +18,6 @@ class JDB{
         this[_init](table)
     }
       /**
-     *
-     *
      * @param {string|number} key
      * @param {*} val
      */
@@ -30,16 +28,21 @@ class JDB{
 
     /**
      *  switches the table that the DB saves/retrieves data from
-     *
      * @param {string} table table to switch to
      */
     switch(table){
         this['table']=table
     }
-
     /**
      *
-     *
+     * @param {string} table
+     */
+    create(table){
+        if(!this[table]){
+        this[table]={}
+        }
+    }
+    /**
      * @param {string|number} key
      * @returns {*}
      */
@@ -48,8 +51,6 @@ class JDB{
     }
 
     /**
-     *
-     *
      * @param {string|number} key
      */
     remove(key){
@@ -68,11 +69,10 @@ class JDB{
             this[i]=data[i]
         }
     }
-    [_defineProp](prop,value,writable=true){
+    [_defineProp](prop,value){
         Object.defineProperty(this,prop,{
             value:value,
             enumerable:false,
-            writable:writable
         })
     }
     [_writeFile](value){
@@ -80,8 +80,5 @@ class JDB{
     }
 }
 module.exports=JDB
-/*let x=new JDB('jobs')
-x.insert('engineer','defense')
-x.switch('users')
-console.log(x.obtain('gavriel'))
-console.log()*/
+let x=new JDB('users')
+x.insert('gavriel',{skills:['archery','sword-fighting','magic']})
