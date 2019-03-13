@@ -3,6 +3,7 @@ const fs=require('fs')
 let _defineProp=Symbol('_defineProp')
 let _writeFile=Symbol('writeFile')
 let _init=Symbol('init')
+let _tableCheck=Symbol('tableCheck')
 class JDB{
 
     /**
@@ -19,10 +20,10 @@ class JDB{
     }
       /**
      * @param {string|number} key
-     * @param {*} val
+     * @param {*} value
      */
-    insert(key,val){
-        this[this['table']][key]=val
+    insert(key,value){
+        this[this['table']][key]=value
         this[_writeFile](this)
     }
 
@@ -49,7 +50,16 @@ class JDB{
     obtain(key){
         return this[this['table']][key] || undefined
     }
-
+    /**
+     * @param  {string} table
+     */
+    collapse(table){
+        if(!this[_tableCheck](table)){
+            throw new Error(`table (${table}) does not exist`)
+        }
+        delete this[table]
+        this[_writeFile](this)
+    }
     /**
      * @param {string|number} key
      */
@@ -78,7 +88,12 @@ class JDB{
     [_writeFile](value){
         fs.writeFileSync(this['path'],JSON.stringify(value,null,'\t'))
     }
+    [_tableCheck](table){
+        return this[table] ? true : false
+    }
 }
 module.exports=JDB
 let x=new JDB('users')
 x.insert('gavriel',{skills:['archery','sword-fighting','magic']})
+x.collapse('wdji')
+console.log(x)
