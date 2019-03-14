@@ -1,5 +1,4 @@
 const fs=require('fs')
-
 let _defineProp=Symbol('_defineProp')
 let _writeFile=Symbol('writeFile')
 let _init=Symbol('init')
@@ -19,6 +18,7 @@ class JDB{
         this[_init](table)
     }
       /**
+       * inserts a K,V pair into the selected table,automatically updates/replaces as needed
      * @param {string|number} key
      * @param {*} value
      */
@@ -26,7 +26,20 @@ class JDB{
         this[this['table']][key]=value
         this[_writeFile](this)
     }
-
+    
+    /**
+     * converts the DB into array form
+     * where format is ``[{table: (string), rows: ({})}]``
+     * 
+     * @returns {Array<any>}
+     */
+    array(){
+        let arr=[]
+        for(let i of Object.keys(this)){
+            arr.push({table:i,rows:this[i]})
+        }
+        return arr
+    }
     /**
      *  switches the table that the DB saves/retrieves data from
      * @param {string} table table to switch to
@@ -95,5 +108,4 @@ class JDB{
 module.exports=JDB
 let x=new JDB('users')
 x.insert('gavriel',{skills:['archery','sword-fighting','magic']})
-x.collapse('wdji')
 console.log(x)
