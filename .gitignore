@@ -75,3 +75,4 @@ typings/
 # FuseBox cache
 .fusebox/
 jdb.json
+jndb.json

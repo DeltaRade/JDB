@@ -1,4 +1,5 @@
 const fs = require('fs');
+const { EventEmitter } = require('events');
 const _defineProp = Symbol('_defineProp');
 const _writeFile = Symbol('writeFile');
 const _init = Symbol('init');
@@ -11,7 +12,12 @@ class JDB {
      * @param {string} [path='.']
      */
 	constructor(table, path = '.') {
-		this[_defineProp]('path', `${path}/jdb.json`, false);
+		this[_defineProp]('path', `${path}/jndb.json`, false);
+		this[_defineProp]('events', new EventEmitter());
+		this['events'].on('write', (value)=>{
+			console.log(value);
+			fs.writeFileSync(this['path'], JSON.stringify(value, null, '\t'));
+		});
 		if(!fs.existsSync(this['path'])) {
 			this[_writeFile]({});
 		}
@@ -99,12 +105,11 @@ class JDB {
 		});
 	}
 	[_writeFile](value) {
-		fs.writeFileSync(this['path'], JSON.stringify(value, null, '\t'));
+		this['events'].emit('write', value);
+		// fs.writeFileSync(this['path'], JSON.stringify(value, null, '\t'));
 	}
 	[_tableCheck](table) {
 		return this[table] ? true : false;
 	}
 }
 module.exports = JDB;
-const x = new JDB('users');
-console.log(x.array());
