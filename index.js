@@ -54,7 +54,7 @@ class JDB {
 		this['table'] = table;
 	}
 	/**
-     *
+     * creates a new table
      * @param {string} table
      */
 	create(table) {
@@ -63,6 +63,7 @@ class JDB {
 		}
 	}
 	/**
+	 * gets the value of the key, if no key is present it returns `undefined`
      * @param {string|number} key
      * @returns {*}
      */
@@ -70,6 +71,7 @@ class JDB {
 		return this[this['table']][key] || undefined;
 	}
 	/**
+	 * deletes an entire table from the database
      * @param  {string} table
      */
 	collapse(table) {
@@ -80,6 +82,7 @@ class JDB {
 		this[_writeFile](this);
 	}
 	/**
+	 * remove a key from the table.
      * @param {string|number} key
      */
 	remove(key) {
