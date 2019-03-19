@@ -1,16 +1,12 @@
-# jndb
-
-JSON based database that strives to provide readability in both the json file and the functions itself
-
 # Documentation
 
-## `constructor(table,path='.')`
+## `constructor(table, path = '.')`
 
  * **Parameters:**
    * `table` — `string` — table to be used for saving/retrieving data from
    * `[path='.']` — `string` — 
 
-## `insert(key,value)`
+## `insert(key, value)`
 
 inserts a K,V pair into the selected table,automatically updates/replaces as needed
 
@@ -20,9 +16,9 @@ inserts a K,V pair into the selected table,automatically updates/replaces as nee
 
 ## `array()`
 
-converts the DB into array form where format is ``[{table:string,rows:{}}]``
+converts the DB into array form where format is ``[{table: (string), rows: ({})}]``
 
- * **Returns:** `[]` — 
+ * **Returns:** `Array<any>` — 
 
 ## `switch(table)`
 
@@ -32,17 +28,25 @@ switches the table that the DB saves/retrieves data from
 
 ## `create(table)`
 
+creates a new table
+
  * **Parameters:** `table` — `string` — 
 
 ## `obtain(key)`
+
+gets the value of the key, if no key is present it returns `undefined`
 
  * **Parameters:** `key` — `string|number` — 
  * **Returns:** `*` — 
 
 ## `collapse(table)`
 
+deletes an entire table from the database
+
  * **Parameters:** `table` — `string` — 
 
 ## `remove(key)`
+
+remove a key from the table.
 
  * **Parameters:** `key` — `string|number` — 
