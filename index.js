@@ -15,7 +15,6 @@ class JDB {
 		this[_defineProp]('path', `${path}/jndb.json`, false);
 		this[_defineProp]('events', new EventEmitter());
 		this['events'].on('write', (value)=>{
-			console.log(value);
 			fs.writeFileSync(this['path'], JSON.stringify(value, null, '\t'));
 		});
 		if(!fs.existsSync(this['path'])) {
