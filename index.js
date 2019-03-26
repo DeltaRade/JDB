@@ -12,6 +12,10 @@ class JDB {
      * @param {string} [path='.']
      */
 	constructor(table, path = '.') {
+		if(!table) {
+			const err = new Error('Missing table name');
+			throw err;
+		}
 		this[_defineProp]('path', `${path}/jndb.json`, false);
 		this[_defineProp]('events', new EventEmitter());
 		this['events'].on('write', (value)=>{
