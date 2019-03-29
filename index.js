@@ -19,7 +19,10 @@ class JDB {
 		this[_defineProp]('path', `${path}/jndb.json`, false);
 		this[_defineProp]('events', new EventEmitter());
 		this['events'].on('write', (value)=>{
-			fs.writeFileSync(this['path'], JSON.stringify(value, null, '\t'));
+			const data = require(this['path']);
+			data[this['table']] ? '' : data[this['table']] = {};
+			data[this['table']][value.key] = value.value;
+			fs.writeFileSync(this['path'], JSON.stringify(data, null, '\t'));
 		});
 		if(!fs.existsSync(this['path'])) {
 			this[_writeFile]({});
@@ -33,7 +36,7 @@ class JDB {
      */
 	insert(key, value) {
 		this[this['table']][key] = value;
-		this[_writeFile](this);
+		this[_writeFile]({ key, value });
 	}
 
 	/**
@@ -48,10 +51,15 @@ class JDB {
 			console.log(i);
 			arr.push({ [i]:this[i] });
 		}
-		// for(const i of Object.keys(this)) {
-		//	arr.push({ table:i, rows:this[i] });
-		// }
 		return arr;
+	}
+	/**
+	 *
+	 * @returns {Object}
+	 */
+	getAllTables() {
+		const data = require(this['path']);
+		return data;
 	}
 	/**
      *  switches the table that the DB saves/retrieves data from
@@ -105,9 +113,7 @@ class JDB {
 		let data = fs.readFileSync(this['path']);
 		data = JSON.parse(data);
 		this[table] = data[table] ? data[table] : {};
-		// for(const i in data) {
-		//	this[i] = data[i];
-		// }
+
 	}
 	[_defineProp](prop, value) {
 		Object.defineProperty(this, prop, {
@@ -123,7 +129,6 @@ class JDB {
 		return this[table] ? true : false;
 	}
 }
-const x = new JDB('x');
-x.insert('oof','fff')
-x.array();
+const x = new JDB('forces');
+console.log(x.getAllTables());
 module.exports = JDB;
