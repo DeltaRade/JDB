@@ -3,7 +3,6 @@ const { EventEmitter } = require('events');
 const _defineProp = Symbol('_defineProp');
 const _writeFile = Symbol('writeFile');
 const _init = Symbol('init');
-const _tableCheck = Symbol('tableCheck');
 class JDB {
 
 	/**
@@ -21,7 +20,7 @@ class JDB {
 		this['events'].on('write', (value)=>{
 			const data = require(this['path']);
 			data[this['table']] ? '' : data[this['table']] = {};
-			data[this['table']] = value[this['table']];
+			data[this['table']] = value;
 			fs.writeFileSync(this['path'], JSON.stringify(data, null, '\t'));
 		});
 		if(!fs.existsSync(this['path'])) {
@@ -35,7 +34,10 @@ class JDB {
      * @param {*} value
      */
 	insert(key, value) {
-		this[this['table']][key] = value;
+		if(!['string', 'number'].includes(typeof key)) {
+			throw new Error('Key is neither a number or a string');
+		}
+		this[key] = value;
 		this[_writeFile](this);
 	}
 
@@ -47,34 +49,18 @@ class JDB {
      */
 	array() {
 		const arr = [];
-		for(const i in this[this['table']]) {
+		for(const i in this) {
 			arr.push({ [i]:this[i] });
 		}
 		return arr;
 	}
 	/**
-	 *
-	 * @returns {Object}
+	 * gets all of the DB's tables and exposes them in the format of `{ table:{key: value}}`
+	 * @returns {{}}
 	 */
 	getAllTables() {
 		const data = require(this['path']);
 		return data;
-	}
-	/**
-     *  switches the table that the DB saves/retrieves data from
-     * @param {string} table table to switch to
-     */
-	switch(table) {
-		this['table'] = table;
-	}
-	/**
-     * creates a new table
-     * @param {string} table
-     */
-	create(table) {
-		if(!this[table]) {
-			this[table] = {};
-		}
 	}
 	/**
 	 * gets the value of the key, if no key is present it returns `undefined`
@@ -82,36 +68,24 @@ class JDB {
      * @returns {*}
      */
 	obtain(key) {
-		return this[this['table']][key] || undefined;
-	}
-	/**
-	 * deletes an entire table from the database
-     * @param  {string} table
-     */
-	collapse(table) {
-		if(!this[_tableCheck](table)) {
-			throw new Error(`table (${table}) does not exist`);
-		}
-		delete this[table];
-		this[_writeFile](this);
+		return this[key] || undefined;
 	}
 	/**
 	 * remove a key from the table.
      * @param {string|number} key
      */
 	remove(key) {
-		this[this['table']][key] = undefined;
-		this[this['table']] = JSON.parse(JSON.stringify(this[this['table']]));
+		delete this[key];
 		this[_writeFile](this);
 	}
 	[_init](table) {
-		if(!this[table]) {
-			this[table] = {};
-		}
 		this[_defineProp]('table', table);
 		let data = fs.readFileSync(this['path']);
 		data = JSON.parse(data);
-		this[table] = data[table] ? data[table] : {};
+		// this[table] = data[table] ? data[table] : {};
+		for(const i in data[table]) {
+			this[i] = data[table][i];
+		}
 
 	}
 	[_defineProp](prop, value) {
@@ -124,11 +98,7 @@ class JDB {
 		this['events'].emit('write', value);
 		// fs.writeFileSync(this['path'], JSON.stringify(value, null, '\t'));
 	}
-	[_tableCheck](table) {
-		return this[table] ? true : false;
-	}
 }
 const x = new JDB('forces');
-x.insert('Mala', 'fire-Bringer');
-console.log(x.getAllTables());
+console.log(x.remove('foo'));
 module.exports = JDB;
