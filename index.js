@@ -21,7 +21,7 @@ class JDB {
 		this['events'].on('write', (value)=>{
 			const data = require(this['path']);
 			data[this['table']] ? '' : data[this['table']] = {};
-			data[this['table']][value.key] = value.value;
+			data[this['table']] = value[this['table']];
 			fs.writeFileSync(this['path'], JSON.stringify(data, null, '\t'));
 		});
 		if(!fs.existsSync(this['path'])) {
@@ -36,7 +36,7 @@ class JDB {
      */
 	insert(key, value) {
 		this[this['table']][key] = value;
-		this[_writeFile]({ key, value });
+		this[_writeFile](this);
 	}
 
 	/**
@@ -48,7 +48,6 @@ class JDB {
 	array() {
 		const arr = [];
 		for(const i in this[this['table']]) {
-			console.log(i);
 			arr.push({ [i]:this[i] });
 		}
 		return arr;
@@ -130,5 +129,6 @@ class JDB {
 	}
 }
 const x = new JDB('forces');
+x.insert('Mala', 'fire-Bringer');
 console.log(x.getAllTables());
 module.exports = JDB;
