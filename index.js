@@ -44,9 +44,13 @@ class JDB {
      */
 	array() {
 		const arr = [];
-		for(const i of Object.keys(this)) {
-			arr.push({ table:i, rows:this[i] });
+		for(const i in this[this['table']]) {
+			console.log(i);
+			arr.push({ [i]:this[i] });
 		}
+		// for(const i of Object.keys(this)) {
+		//	arr.push({ table:i, rows:this[i] });
+		// }
 		return arr;
 	}
 	/**
@@ -100,9 +104,10 @@ class JDB {
 		this[_defineProp]('table', table);
 		let data = fs.readFileSync(this['path']);
 		data = JSON.parse(data);
-		for(const i in data) {
-			this[i] = data[i];
-		}
+		this[table] = data[table] ? data[table] : {};
+		// for(const i in data) {
+		//	this[i] = data[i];
+		// }
 	}
 	[_defineProp](prop, value) {
 		Object.defineProperty(this, prop, {
@@ -118,4 +123,7 @@ class JDB {
 		return this[table] ? true : false;
 	}
 }
+const x = new JDB('x');
+x.insert('oof','fff')
+x.array();
 module.exports = JDB;
