@@ -3,10 +3,10 @@ const { EventEmitter } = require('events');
 const _defineProp = Symbol('_defineProp');
 const _writeFile = Symbol('writeFile');
 const _init = Symbol('init');
-class JDB {
+class JNDB {
 
 	/**
-     *Creates an instance of JDB.
+     *Creates an instance of JNDB.
      *@param {string} table table to be used for saving/retrieving data from
      * @param {string} [path='.']
      */
@@ -99,6 +99,6 @@ class JDB {
 		// fs.writeFileSync(this['path'], JSON.stringify(value, null, '\t'));
 	}
 }
-const x = new JDB('forces');
-console.log(x.remove('foo'));
-module.exports = JDB;
+// const x=new JNDB('forces')
+
+module.exports = JNDB;
