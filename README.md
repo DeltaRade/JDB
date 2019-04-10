@@ -20,30 +20,17 @@ converts the DB into array form where format is ``[{table: (string), rows: ({})}
 
  * **Returns:** `Array<any>` — 
 
-## `switch(table)`
-
-switches the table that the DB saves/retrieves data from
-
- * **Parameters:** `table` — `string` — table to switch to
-
-## `create(table)`
-
-creates a new table
-
- * **Parameters:** `table` — `string` — 
-
 ## `obtain(key)`
 
 gets the value of the key, if no key is present it returns `undefined`
 
  * **Parameters:** `key` — `string|number` — 
- * **Returns:** `*` — 
-
-## `collapse(table)`
-
-deletes an entire table from the database
-
- * **Parameters:** `table` — `string` — 
+ * **Returns:** `*` — - [Documentation](#documentation)
+  - [`constructor(table, path = '.')`](#constructortable-path)
+  - [`insert(key, value)`](#insertkey-value)
+  - [`array()`](#array)
+  - [`obtain(key)`](#obtainkey)
+  - [`remove(key)`](#removekey)
 
 ## `remove(key)`
 
