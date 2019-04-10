@@ -2,16 +2,12 @@
 
 ## JNDB
 **Kind**: global class  
-
-* [JNDB](#JNDB)
-    * [new JNDB(table, [path])](#new_JDB_new)
-    * [.insert(key, value)](#JNDB+insert)
-    * [.array()](#JNDB+array) ⇒ <code>Array.&lt;any&gt;</code>
-    * [.switch(table)](#JNDB+switch)
-    * [.create(table)](#JNDB+create)
-    * [.obtain(key)](#JNDB+obtain) ⇒ <code>\*</code>
-    * [.collapse(table)](#JNDB+collapse)
-    * [.remove(key)](#JNDB+remove)
+- [JNDB](#jndb)
+  - [new JNDB(table, [path])](#new-jndbtable-path)
+  - [JNDB.insert(key, value)](#jndbinsertkey-value)
+  - [JNDB.array() ⇒ <code>Array.&lt;any&gt;</code>](#jndbarray-%E2%87%92-codearrayltanygtcode)
+  - [JNDB.obtain(key) ⇒ <code>\*</code>](#jndbobtainkey-%E2%87%92-codecode)
+  - [JNDB.remove(key)](#jndbremovekey)
 
 <a name="new_JDB_new"></a>
 
@@ -42,26 +38,7 @@ inserts a K,V pair into the selected table,automatically updates/replaces as nee
 converts the DB into array form
 where format is ``[{table:string,rows:{}}]``
 
-**Kind**: instance method of [<code>JDB</code>](#JDB)  
-<a name="JNDB+switch"></a>
-
-### jdB.switch(table)
-switches the table that the DB saves/retrieves data from
-
-**Kind**: instance method of [<code>JDB</code>](#JDB)  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| table | <code>string</code> | table to switch to |
-
-<a name="JNDB+create"></a>
-
-### JNDB.create(table)
-**Kind**: instance method of [<code>JDB</code>](#JDB)  
-
-| Param | Type |
-| --- | --- |
-| table | <code>string</code> | 
+**Kind**: instance method of [<code>JDB</code>](#JDB) 
 
 <a name="JDB+obtain"></a>
 
@@ -71,15 +48,6 @@ switches the table that the DB saves/retrieves data from
 | Param | Type |
 | --- | --- |
 | key | <code>string</code> \| <code>number</code> | 
-
-<a name="JNDB+collapse"></a>
-
-### JNDB.collapse(table)
-**Kind**: instance method of [<code>JDB</code>](#JDB)  
-
-| Param | Type |
-| --- | --- |
-| table | <code>string</code> | 
 
 <a name="JNDB+remove"></a>
 
