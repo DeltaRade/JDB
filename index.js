@@ -55,7 +55,7 @@ class JNDB {
 		return arr;
 	}
 	/**
-	 * gets all of the DB's tables and exposes them in the format of `{ table:{key: value}}`
+	 * gets all of the Database's tables and exposes them in the format of `{ table:{key: value}}`
 	 * @returns {{}}
 	 */
 	getAllTables() {

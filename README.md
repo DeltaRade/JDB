@@ -1,4 +1,12 @@
 # Documentation
+- [Documentation](#documentation)
+  - [`constructor(table, path = '.')`](#constructortable-path)
+  - [`insert(key, value)`](#insertkey-value)
+  - [`array()`](#array)
+  - [`getAllTables()`](#getalltables)
+  - [`obtain(key)`](#obtainkey)
+  - [`remove(key)`](#removekey)
+
 
 ## `constructor(table, path = '.')`
 
@@ -20,17 +28,17 @@ converts the DB into array form where format is ``[{table: (string), rows: ({})}
 
  * **Returns:** `Array<any>` — 
 
+## `getAllTables()`
+
+  gets all of the Database's tables and exposes them in the format of `{ table:{key: value}}`
+
+  * **Returns** `{}` — 
 ## `obtain(key)`
 
 gets the value of the key, if no key is present it returns `undefined`
 
  * **Parameters:** `key` — `string|number` — 
- * **Returns:** `*` — - [Documentation](#documentation)
-  - [`constructor(table, path = '.')`](#constructortable-path)
-  - [`insert(key, value)`](#insertkey-value)
-  - [`array()`](#array)
-  - [`obtain(key)`](#obtainkey)
-  - [`remove(key)`](#removekey)
+ * **Returns:** `*` — 
 
 ## `remove(key)`
 
