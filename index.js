@@ -132,3 +132,27 @@ class JNDB {
 }
 // const x = new JNDB('people');
 module.exports = JNDB;
+
+class Result {
+	constructor(object) {
+		if(typeof object != 'object') {throw new TypeError('value give is not of type object');}
+		for(const i in object) {
+			this[i] = object[i];
+		}
+	}
+
+	/**
+	 *
+	 * @param {(value:any,key:string|number,this:this)=>boolean} fn
+	 * @param {*} [thisArg]
+	 * @returns {Result}
+	 */
+	filter(fn, thisArg) {
+		if (thisArg) fn = fn.bind(thisArg);
+		const results = new Result({});
+		for (const key in this) {
+			if (fn(this[key], key, this)) results[key] = this[key];
+		}
+		return results;
+	}
+}
