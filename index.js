@@ -35,6 +35,7 @@ class JNDB {
        * inserts a K,V pair into the selected table,automatically updates/replaces as needed
      * @param {string|number} key
      * @param {*} value
+	 * @returns {this}
      */
 	insert(key, value) {
 		if(!['string', 'number'].includes(typeof key)) {
@@ -42,6 +43,7 @@ class JNDB {
 		}
 		this[key] = value;
 		this[_writeFile](this);
+		return this;
 	}
 
 	/**
@@ -76,10 +78,12 @@ class JNDB {
 	/**
 	 * remove a key from the table.
      * @param {string|number} key
+	 * @returns {this}
      */
 	remove(key) {
 		delete this[key];
 		this[_writeFile](this);
+		return this;
 	}
 	/**
 	 *Searches for a single item where the given function returns a boolean value. Behaves like
@@ -136,8 +140,13 @@ module.exports = JNDB;
 class Result {
 	constructor(object) {
 		if(typeof object != 'object') {throw new TypeError('value give is not of type object');}
+		this.fullResult = {};
+		this.keys = [];
+		this.values = [];
 		for(const i in object) {
-			this[i] = object[i];
+			this.fullResult[i] = object.i;
+			this.keys.push(i);
+			this.values.push(object[i]);
 		}
 	}
 
@@ -154,5 +163,9 @@ class Result {
 			if (fn(this[key], key, this)) results[key] = this[key];
 		}
 		return results;
+	}
+
+	has(key) {
+		return this.fullResult[key] ? true : false;
 	}
 }
