@@ -3,6 +3,9 @@ const { EventEmitter } = require('events');
 const _defineProp = Symbol('_defineProp');
 const _writeFile = Symbol('writeFile');
 const _init = Symbol('init');
+/**
+ * @class JNDB
+ */
 class JNDB {
 
 	/**
@@ -78,6 +81,34 @@ class JNDB {
 		delete this[key];
 		this[_writeFile](this);
 	}
+	/**
+	 *Searches for a single item where the given function returns a boolean value. Behaves like
+	 * [Array.find()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find)
+	 * @param {(value:*,key:string|number,this:this)=>boolean} fn
+	 * @param {*} [thisArg]
+	 * @returns {*}
+	 */
+	find(fn, thisArg) {
+		if (thisArg) fn = fn.bind(thisArg);
+		for (const value in this) {
+			if (fn(this[value], value, this)) return this[value];
+		}
+		return undefined;
+	}
+	/**
+	 *
+	 * @param {(value:any,key:string|number,this:this)=>boolean} fn
+	 * @param {*} [thisArg]
+	 * @returns {{}}
+	 */
+	filter(fn, thisArg) {
+		if (thisArg) fn = fn.bind(thisArg);
+		const results = {};
+		for (const key in this) {
+			if (fn(this[key], key, this)) results[key] = this[key];
+		}
+		return results;
+	}
 	[_init](table) {
 		this[_defineProp]('table', table);
 		let data = fs.readFileSync(this['path']);
@@ -99,6 +130,5 @@ class JNDB {
 		// fs.writeFileSync(this['path'], JSON.stringify(value, null, '\t'));
 	}
 }
-// const x=new JNDB('forces')
-
+// const x = new JNDB('people');
 module.exports = JNDB;
