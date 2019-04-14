@@ -1,6 +1,6 @@
 {
   "name": "jndb",
-  "version": "2.2.1",
+  "version": "2.4.0",
   "description": "json based database for node js",
   "main": "index.js",
   "scripts": {

@@ -3,6 +3,9 @@ const { EventEmitter } = require('events');
 const _defineProp = Symbol('_defineProp');
 const _writeFile = Symbol('writeFile');
 const _init = Symbol('init');
+/**
+ * @class JNDB
+ */
 class JNDB {
 
 	/**
@@ -32,6 +35,7 @@ class JNDB {
        * inserts a K,V pair into the selected table,automatically updates/replaces as needed
      * @param {string|number} key
      * @param {*} value
+	 * @returns {this}
      */
 	insert(key, value) {
 		if(!['string', 'number'].includes(typeof key)) {
@@ -39,6 +43,7 @@ class JNDB {
 		}
 		this[key] = value;
 		this[_writeFile](this);
+		return this;
 	}
 
 	/**
@@ -73,10 +78,40 @@ class JNDB {
 	/**
 	 * remove a key from the table.
      * @param {string|number} key
+	 * @returns {this}
      */
 	remove(key) {
 		delete this[key];
 		this[_writeFile](this);
+		return this;
+	}
+	/**
+	 *Searches for a single item where the given function returns a boolean value. Behaves like
+	 * [Array.find()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find)
+	 * @param {(value:*,key:string|number,this:this)=>boolean} fn
+	 * @param {*} [thisArg]
+	 * @returns {*}
+	 */
+	find(fn, thisArg) {
+		if (thisArg) fn = fn.bind(thisArg);
+		for (const value in this) {
+			if (fn(this[value], value, this)) return this[value];
+		}
+		return undefined;
+	}
+	/**
+	 *
+	 * @param {(value:any,key:string|number,this:this)=>boolean} fn
+	 * @param {*} [thisArg]
+	 * @returns {{}}
+	 */
+	filter(fn, thisArg) {
+		if (thisArg) fn = fn.bind(thisArg);
+		const results = {};
+		for (const key in this) {
+			if (fn(this[key], key, this)) results[key] = this[key];
+		}
+		return results;
 	}
 	[_init](table) {
 		this[_defineProp]('table', table);
@@ -99,6 +134,38 @@ class JNDB {
 		// fs.writeFileSync(this['path'], JSON.stringify(value, null, '\t'));
 	}
 }
-// const x=new JNDB('forces')
-
+// const x = new JNDB('people');
 module.exports = JNDB;
+
+class Result {
+	constructor(object) {
+		if(typeof object != 'object') {throw new TypeError('value give is not of type object');}
+		this.fullResult = {};
+		this.keys = [];
+		this.values = [];
+		for(const i in object) {
+			this.fullResult[i] = object.i;
+			this.keys.push(i);
+			this.values.push(object[i]);
+		}
+	}
+
+	/**
+	 *
+	 * @param {(value:any,key:string|number,this:this)=>boolean} fn
+	 * @param {*} [thisArg]
+	 * @returns {Result}
+	 */
+	filter(fn, thisArg) {
+		if (thisArg) fn = fn.bind(thisArg);
+		const results = new Result({});
+		for (const key in this) {
+			if (fn(this[key], key, this)) results[key] = this[key];
+		}
+		return results;
+	}
+
+	has(key) {
+		return this.fullResult[key] ? true : false;
+	}
+}
