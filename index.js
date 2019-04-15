@@ -51,7 +51,7 @@ class JNDB {
      * converts the DB into array form
      * where format is ``[{table: (string), rows: ({})}]``
      *
-     * @returns {Array<any>}
+     * @returns {Array<{table:string,rows:{}}>}
      */
 	array() {
 		const arr = [];
