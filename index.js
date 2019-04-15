@@ -100,20 +100,6 @@ class JNDB {
 		}
 		return undefined;
 	}
-	/**
-	 *
-	 * @param {(value:any,key:string|number,this:this)=>boolean} fn
-	 * @param {*} [thisArg]
-	 * @returns {{}}
-	 */
-	filter(fn, thisArg) {
-		if (thisArg) fn = fn.bind(thisArg);
-		const results = {};
-		for (const key in this) {
-			if (fn(this[key], key, this)) results[key] = this[key];
-		}
-		return results;
-	}
 	[_init](table) {
 		this[_defineProp]('table', table);
 		let data = fs.readFileSync(this['path']);
