@@ -3,6 +3,7 @@ const { EventEmitter } = require('events');
 const _defineProp = Symbol('_defineProp');
 const _writeFile = Symbol('writeFile');
 const _init = Symbol('init');
+
 /**
  * @class JNDB
  */
@@ -136,7 +137,6 @@ class JNDB {
 }
 // const x = new JNDB('people');
 module.exports = JNDB;
-
 class Result {
 	constructor(object) {
 		if(typeof object != 'object') {throw new TypeError('value give is not of type object');}
@@ -144,7 +144,7 @@ class Result {
 		this.keys = [];
 		this.values = [];
 		for(const i in object) {
-			this.fullResult[i] = object.i;
+			this.fullResult[i] = object[i];
 			this.keys.push(i);
 			this.values.push(object[i]);
 		}
