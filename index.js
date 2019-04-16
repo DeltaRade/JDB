@@ -3,6 +3,7 @@ const { EventEmitter } = require('events');
 const _defineProp = Symbol('_defineProp');
 const _writeFile = Symbol('writeFile');
 const _init = Symbol('init');
+
 /**
  * @class JNDB
  */
@@ -17,6 +18,9 @@ class JNDB {
 		if(!table) {
 			const err = new Error('Missing table name');
 			throw err;
+		}
+		if(typeof table !== 'string') {
+			throw new TypeError('table is not of type string');
 		}
 		this[_defineProp]('path', `${path}/jndb.json`, false);
 		this[_defineProp]('events', new EventEmitter());
@@ -39,7 +43,7 @@ class JNDB {
      */
 	insert(key, value) {
 		if(!['string', 'number'].includes(typeof key)) {
-			throw new Error('Key is neither a number or a string');
+			throw new TypeError('Key is neither a number or a string');
 		}
 		this[key] = value;
 		this[_writeFile](this);
@@ -50,7 +54,7 @@ class JNDB {
      * converts the DB into array form
      * where format is ``[{table: (string), rows: ({})}]``
      *
-     * @returns {Array<any>}
+     * @returns {Array<{table:string,rows:{}}>}
      */
 	array() {
 		const arr = [];
@@ -60,7 +64,7 @@ class JNDB {
 		return arr;
 	}
 	/**
-	 * gets all of the Database's tables and exposes them in the format of `{ table:{key: value}}`
+	 * gets all of the Database's tables and exposes them in the format of `{ table:{key: value} }`
 	 * @returns {{}}
 	 */
 	getAllTables() {
@@ -72,7 +76,7 @@ class JNDB {
      * @param {string|number} key
      * @returns {*}
      */
-	obtain(key) {
+	get(key) {
 		return this[key] || undefined;
 	}
 	/**
@@ -81,6 +85,7 @@ class JNDB {
 	 * @returns {this}
      */
 	remove(key) {
+		if(!this[key]) {return;}
 		delete this[key];
 		this[_writeFile](this);
 		return this;
@@ -98,20 +103,6 @@ class JNDB {
 			if (fn(this[value], value, this)) return this[value];
 		}
 		return undefined;
-	}
-	/**
-	 *
-	 * @param {(value:any,key:string|number,this:this)=>boolean} fn
-	 * @param {*} [thisArg]
-	 * @returns {{}}
-	 */
-	filter(fn, thisArg) {
-		if (thisArg) fn = fn.bind(thisArg);
-		const results = {};
-		for (const key in this) {
-			if (fn(this[key], key, this)) results[key] = this[key];
-		}
-		return results;
 	}
 	[_init](table) {
 		this[_defineProp]('table', table);
@@ -136,7 +127,6 @@ class JNDB {
 }
 // const x = new JNDB('people');
 module.exports = JNDB;
-
 class Result {
 	constructor(object) {
 		if(typeof object != 'object') {throw new TypeError('value give is not of type object');}
@@ -144,7 +134,7 @@ class Result {
 		this.keys = [];
 		this.values = [];
 		for(const i in object) {
-			this.fullResult[i] = object.i;
+			this.fullResult[i] = object[i];
 			this.keys.push(i);
 			this.values.push(object[i]);
 		}
