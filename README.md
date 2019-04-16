@@ -4,8 +4,9 @@
   - [`insert(key, value)`](#insertkey-value)
   - [`array()`](#array)
   - [`getAllTables()`](#getalltables)
-  - [`obtain(key)`](#obtainkey)
+  - [`get(key)`](#getkey)
   - [`remove(key)`](#removekey)
+  - [`find(fn, thisArg)`](#findfn-thisarg)
 
 
 ## `constructor(table, path = '.')`
@@ -21,19 +22,21 @@ inserts a K,V pair into the selected table,automatically updates/replaces as nee
  * **Parameters:**
    * `key` — `string|number` — 
    * `value` — `*` — 
+ * **Returns:** `this` — 
 
 ## `array()`
 
 converts the DB into array form where format is ``[{table: (string), rows: ({})}]``
 
- * **Returns:** `Array<any>` — 
+ * **Returns:** `Array<{table:string,rows:{}}>` — 
 
 ## `getAllTables()`
 
-  gets all of the Database's tables and exposes them in the format of `{ table:{key: value}}`
+gets all of the Database's tables and exposes them in the format of `{ table:{key: value} }`
 
-  * **Returns** `{}` — 
-## `obtain(key)`
+ * **Returns:** `{}` — 
+
+## `get(key)`
 
 gets the value of the key, if no key is present it returns `undefined`
 
@@ -45,3 +48,13 @@ gets the value of the key, if no key is present it returns `undefined`
 remove a key from the table.
 
  * **Parameters:** `key` — `string|number` — 
+ * **Returns:** `this` — 
+
+## `find(fn, thisArg)`
+Searches for a single item where the given function returns a boolean value. Behaves like
+[Array.find()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find)
+
+ * **Parameters:**
+   * `fn` — `(value:*,key:string|number,this:this)=>boolean` — 
+   * `[thisArg]` — `*` — 
+ * **Returns:** `*` — 

@@ -19,6 +19,9 @@ class JNDB {
 			const err = new Error('Missing table name');
 			throw err;
 		}
+		if(typeof table !== 'string') {
+			throw new TypeError('table is not of type string');
+		}
 		this[_defineProp]('path', `${path}/jndb.json`, false);
 		this[_defineProp]('events', new EventEmitter());
 		this['events'].on('write', (value)=>{
@@ -40,7 +43,7 @@ class JNDB {
      */
 	insert(key, value) {
 		if(!['string', 'number'].includes(typeof key)) {
-			throw new Error('Key is neither a number or a string');
+			throw new TypeError('Key is neither a number or a string');
 		}
 		this[key] = value;
 		this[_writeFile](this);
@@ -61,7 +64,7 @@ class JNDB {
 		return arr;
 	}
 	/**
-	 * gets all of the Database's tables and exposes them in the format of `{ table:{key: value}}`
+	 * gets all of the Database's tables and exposes them in the format of `{ table:{key: value} }`
 	 * @returns {{}}
 	 */
 	getAllTables() {
@@ -73,7 +76,7 @@ class JNDB {
      * @param {string|number} key
      * @returns {*}
      */
-	obtain(key) {
+	get(key) {
 		return this[key] || undefined;
 	}
 	/**
@@ -82,6 +85,7 @@ class JNDB {
 	 * @returns {this}
      */
 	remove(key) {
+		if(!this[key]) {return;}
 		delete this[key];
 		this[_writeFile](this);
 		return this;
