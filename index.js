@@ -36,6 +36,15 @@ class JNDB {
 		this[_init](table);
 	}
 	/**
+	 *
+	 * @readonly
+	 * @memberof JNDB
+	 */
+	get size() {
+		return this.array().length;
+	}
+
+	/**
        * inserts a K,V pair into the selected table,automatically updates/replaces as needed
      * @param {string|number} key
      * @param {*} value
