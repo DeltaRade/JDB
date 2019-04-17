@@ -7,6 +7,7 @@
   - [`get(key)`](#getkey)
   - [`remove(key)`](#removekey)
   - [`find(fn, thisArg)`](#findfn-thisarg)
+- [Issues](#issues)
 
 
 ## `constructor(table, path = '.')`
@@ -58,3 +59,7 @@ Searches for a single item where the given function returns a boolean value. Beh
    * `fn` — `(value:*,key:string|number,this:this)=>boolean` — 
    * `[thisArg]` — `*` — 
  * **Returns:** `*` — 
+
+# Issues
+You can post issues [here](https://github.com/DeltaRade/jndb/issues).
+If you have any questions you can join [the discord server](https://discord.gg/6n4Eda5).
