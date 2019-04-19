@@ -167,7 +167,11 @@ class Result {
 		return this.fullResult[key] ? true : false;
 	}
 }
-
+/**
+ *
+ *	Uncache version of the latter, better for a big database
+ * @class JNDBClient
+ */
 class JNDBClient {
 	/**
 	 *Creates an instance of JNDBClient.

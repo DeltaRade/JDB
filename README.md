@@ -1,23 +1,40 @@
 # Documentation
 - [Documentation](#documentation)
-  - [`constructor(table, path = '.')`](#constructortable-path)
-  - [`insert(key, value)`](#insertkey-value)
-  - [`array()`](#array)
-  - [`getAllTables()`](#getalltables)
-  - [`get(key)`](#getkey)
-  - [`remove(key)`](#removekey)
-  - [`find(fn, thisArg)`](#findfn-thisarg)
+  - [`class JNDB` (`Database`)](#class-jndb-database)
+    - [`constructor(table, path = '.')`](#constructortable-path)
+    - [`get size()`](#get-size)
+    - [`insert(key, value)`](#insertkey-value)
+    - [`array()`](#array)
+    - [`getAllTables()`](#getalltables)
+    - [`get(key)`](#getkey)
+    - [`remove(key)`](#removekey)
+    - [`find(fn, thisArg)`](#findfn-thisarg)
+  - [`class JNDBClient` (`Connection`)](#class-jndbclient-connection)
+    - [`constructor(table, options)`](#constructortable-options)
+    - [`get count()`](#get-count)
+    - [`delete(key)`](#deletekey)
+    - [`has(key)`](#haskey)
+    - [`insert(key, value)`](#insertkey-value-1)
+    - [`fetch(key)`](#fetchkey)
+    - [`fetchArray()`](#fetcharray)
+    - [`fetchAll()`](#fetchall)
 - [Example](#example)
+  - [`Database`](#database)
+  - [`Connection`](#connection)
 - [Issues](#issues)
+## `class JNDB` (`Database`)
+main class
 
-
-## `constructor(table, path = '.')`
+### `constructor(table, path = '.')`
 
  * **Parameters:**
    * `table` — `string` — table to be used for saving/retrieving data from
    * `[path='.']` — `string` — 
 
-## `insert(key, value)`
+### `get size()`
+
+
+### `insert(key, value)`
 
 inserts a K,V pair into the selected table,automatically updates/replaces as needed
 
@@ -26,34 +43,34 @@ inserts a K,V pair into the selected table,automatically updates/replaces as nee
    * `value` — `*` — 
  * **Returns:** `this` — 
 
-## `array()`
+### `array()`
 
 converts the DB into array form where format is ``[{table: (string), rows: ({})}]``
 
  * **Returns:** `Array<{table:string,rows:{}}>` — 
 
-## `getAllTables()`
+### `getAllTables()`
 
 gets all of the Database's tables and exposes them in the format of `{ table:{key: value} }`
 
  * **Returns:** `{}` — 
 
-## `get(key)`
+### `get(key)`
 
 gets the value of the key, if no key is present it returns `undefined`
 
  * **Parameters:** `key` — `string|number` — 
  * **Returns:** `*` — 
 
-## `remove(key)`
+### `remove(key)`
 
 remove a key from the table.
 
  * **Parameters:** `key` — `string|number` — 
  * **Returns:** `this` — 
 
-## `find(fn, thisArg)`
-Searches for a single item where the given function returns a boolean value. Behaves like
+### `find(fn, thisArg)`
+
 [Array.find()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find)
 
  * **Parameters:**
@@ -61,11 +78,55 @@ Searches for a single item where the given function returns a boolean value. Beh
    * `[thisArg]` — `*` — 
  * **Returns:** `*` — 
 
+## `class JNDBClient` (`Connection`)
+
+Noncache version of the latter, better for a big database
+
+
+### `constructor(table, options)`
+
+ * **Parameters:**
+   * `table` — `string` — 
+   * `{{path:'.',fetchAll:false}}` — 
+
+### `get count()`
+
+
+### `delete(key)`
+
+ * **Parameters:** `key` — `string|number` — 
+ * **Returns:** `this` — 
+
+### `has(key)`
+
+ * **Parameters:** `key` — `string|number` — 
+ * **Returns:** `boolean` — 
+
+### `insert(key, value)`
+
+ * **Parameters:**
+   * `key` — `string|number` — 
+   * `value` — `*` — 
+ * **Returns:** `this` — 
+
+### `fetch(key)`
+
+ * **Parameters:** `key` — `string|number` — 
+ * **Returns:** `*` — 
+
+### `fetchArray()`
+
+ * **Returns:** `Array<{}>` — 
+
+### `fetchAll()`
+
+ * **Returns:** `{}` — 
 # Example
+## `Database`
 `index.js`
 ```js
 const jndb=require('jndb')
-let db=new jndb('users')
+let db=new jndb.Database('users')
 db.insert('john','doe')
 ```
 `jndb.json`
@@ -77,6 +138,14 @@ db.insert('john','doe')
 }
 ```
 
+## `Connection`
+`index.js`
+```js
+const jndb=require('jndb')
+let db=new jndb.Connection('users')
+db.fetchAll()
+// {john:'doe'}
+```
 # Issues
 You can post issues [here](https://github.com/DeltaRade/jndb/issues).
 If you have any questions you can join [the discord server](https://discord.gg/6n4Eda5).
