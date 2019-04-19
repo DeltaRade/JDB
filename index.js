@@ -188,6 +188,7 @@ class JNDBClient {
 			throw new TypeError('table is not of type string');
 		}
 		options.path ? '' : options.path = '.';
+		this[_defineProp]('path', `${options.path}/jndb.json`, false);
 		if(!fs.existsSync(this['path'])) {
 			fs.writeFileSync(this['path'], JSON.stringify({}, null, '\t'));
 		}
@@ -287,7 +288,6 @@ class JNDBClient {
 	}
 	[_init](table, options) {
 		this[_defineProp]('table', table);
-		this[_defineProp]('path', `${options.path}/jndb.json`, false);
 		if(options.fetchAll) {
 			this.fetchAll();
 		}
@@ -316,6 +316,5 @@ class JNDBClient {
 		fs.writeFileSync(this['path'], JSON.stringify(data, null, '\t'));
 	}
 }
-
 exports.Database = JNDB;
 exports.Connection = JNDBClient;
