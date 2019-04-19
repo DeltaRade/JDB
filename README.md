@@ -7,6 +7,7 @@
   - [`get(key)`](#getkey)
   - [`remove(key)`](#removekey)
   - [`find(fn, thisArg)`](#findfn-thisarg)
+- [Example](#example)
 - [Issues](#issues)
 
 
@@ -59,6 +60,22 @@ Searches for a single item where the given function returns a boolean value. Beh
    * `fn` — `(value:*,key:string|number,this:this)=>boolean` — 
    * `[thisArg]` — `*` — 
  * **Returns:** `*` — 
+
+# Example
+`index.js`
+```js
+const jndb=require('jndb')
+let db=new jndb('users')
+db.insert('john','doe')
+```
+`jndb.json`
+```json
+{
+  "users":{
+    "john":"doe"
+  }
+}
+```
 
 # Issues
 You can post issues [here](https://github.com/DeltaRade/jndb/issues).

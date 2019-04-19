@@ -3,6 +3,7 @@ const { EventEmitter } = require('events');
 const _defineProp = Symbol('_defineProp');
 const _writeFile = Symbol('writeFile');
 const _init = Symbol('init');
+const _checkUnused = Symbol('checkUnused');
 
 /**
  * @class JNDB
@@ -10,7 +11,7 @@ const _init = Symbol('init');
 class JNDB {
 
 	/**
-     *Creates an instance of JNDB.
+     *Creates an instance of JNDB. A difference from this, JNDBClient, doesn't load all the database contents making it perfect for huge amounts of data
      *@param {string} table table to be used for saving/retrieving data from
      * @param {string} [path='.']
      */
@@ -94,7 +95,7 @@ class JNDB {
 	 * @returns {this}
      */
 	remove(key) {
-		if(!this[key]) {return;}
+		if(!this[key]) {return this;}
 		delete this[key];
 		this[_writeFile](this);
 		return this;
@@ -134,8 +135,6 @@ class JNDB {
 		// fs.writeFileSync(this['path'], JSON.stringify(value, null, '\t'));
 	}
 }
-// const x = new JNDB('people');
-module.exports = JNDB;
 class Result {
 	constructor(object) {
 		if(typeof object != 'object') {throw new TypeError('value give is not of type object');}
@@ -168,3 +167,147 @@ class Result {
 		return this.fullResult[key] ? true : false;
 	}
 }
+
+class JNDBClient {
+	/**
+	 *Creates an instance of JNDBClient.
+	 * @param {string} table
+	 * @param {{path:'.',fetchAll:false}} options
+	 * @memberof JNDBClient
+	 */
+	constructor(table, options = { path:'.', fetchAll:false }) {
+		if(!table) {
+			const err = new Error('Missing table name');
+			throw err;
+		}
+		if(typeof table !== 'string') {
+			throw new TypeError('table is not of type string');
+		}
+		options.path ? '' : options.path = '.';
+		this[_defineProp]('lastUsedKeys', []);
+		this[_init](table, options);
+	}
+	/**
+	 *
+	 * @readonly
+	 * @memberof JNDB
+	 */
+	get count() {
+		let amount = 0;
+		let data = fs.readFileSync(this['path']);
+		data = JSON.parse(data);
+		for(const i in data[this['table']]) {
+			amount++;
+		}
+		return amount;
+	}
+	/**
+	 *
+	 * @param {string|number} key
+	 * @returns {this}
+	 */
+	delete(key) {
+		let data = fs.readFileSync(this['path']);
+		data = JSON.parse(data);
+		if(!data[this['table']][key]) {return this;}
+		delete data[this['table']][key];
+		delete this[key];
+		fs.writeFileSync(this['path'], JSON.stringify(data, null, '\t'));
+		return this;
+	}
+	/**
+	 *
+	 * @param {string|number} key
+	 * @returns {boolean}
+	 */
+	has(key) {
+		let data = fs.readFileSync(this['path']);
+		data = JSON.parse(data);
+		data = data[this['table']];
+		return data[key] ? true : false;
+	}
+	/**
+	 *
+	 * @param {string|number} key
+	 * @param {*} value
+	 * @returns {this}
+	 */
+	insert(key, value) {
+		this[_checkUnused]();
+		let data = fs.readFileSync(this['path']);
+		data = JSON.parse(data);
+		data[this['table']][key] = value;
+		this[key] = value;
+		this.lastUsedKeys.push(key);
+		fs.writeFileSync(this['path'], JSON.stringify(data, null, '\t'));
+		return this;
+	}
+	/**
+	 *
+	 * @param {string|number} key
+	 * @returns {*}
+	 */
+	fetch(key) {
+		this[_checkUnused]();
+		let data = fs.readFileSync(this['path']);
+		data = JSON.parse(data);
+		const val = data[this['table']][key];
+		if(!this[key] && val) {
+			this[key] = val;
+		}
+		val ? this.lastUsedKeys.push(key) : '';
+		return val || undefined;
+	}
+	/**
+	 * @returns {Array<{}>}
+	 */
+	fetchArray() {
+		const arr = [];
+		let data = fs.readFileSync(this['path']);
+		data = JSON.parse(data);
+		data = data[this['table']];
+		for(const i in data) {
+			arr.push({ [i]:data[i] });
+		}
+		return arr;
+	}
+	/**
+ 	*
+ 	* @returns {{}}
+ 	* @memberof JNDBClient
+ 	*/
+	fetchAll() {
+		let data = fs.readFileSync(this['path']);
+		data = JSON.parse(data);
+		data = data[this['table']];
+		// for(const i in data[this['table']]) {
+		// this[i] = data[this['table']][i];
+		// }
+		return data;
+	}
+	[_init](table, options) {
+		this[_defineProp]('table', table);
+		this[_defineProp]('path', `${options.path}/jndb.json`, false);
+		if(options.fetchAll) {
+			this.fetchAll();
+		}
+	}
+	[_defineProp](prop, value) {
+		Object.defineProperty(this, prop, {
+			value:value,
+			enumerable:false,
+		});
+	}
+	[_checkUnused]() {
+		const lastUsed = this.lastUsedKeys;
+		if(lastUsed.length >= 5) {
+			const lastvalue = lastUsed.splice(0, 1);
+			const has = lastUsed.find(x=>x == lastvalue[0]);
+			if(has) {return;}
+			delete this[lastvalue];
+		}
+	}
+}
+
+exports.Database = JNDB;
+exports.Connection = JNDBClient;
