@@ -3,6 +3,7 @@ const { EventEmitter } = require('events');
 const _defineProp = Symbol('_defineProp');
 const _writeFile = Symbol('writeFile');
 const _init = Symbol('init');
+const _checkUnused = Symbol('checkUnused');
 
 /**
  * @class JNDB
@@ -134,8 +135,6 @@ class JNDB {
 		// fs.writeFileSync(this['path'], JSON.stringify(value, null, '\t'));
 	}
 }
-// const x = new JNDB('people');
-module.exports = JNDB;
 class Result {
 	constructor(object) {
 		if(typeof object != 'object') {throw new TypeError('value give is not of type object');}
@@ -185,6 +184,7 @@ class JNDBClient {
 			throw new TypeError('table is not of type string');
 		}
 		options.path ? '' : options.path = '.';
+		this[_defineProp]('lastUsedKeys', []);
 		this[_init](table, options);
 	}
 	/**
@@ -211,6 +211,7 @@ class JNDBClient {
 		data = JSON.parse(data);
 		if(!data[this['table']][key]) {return this;}
 		delete data[this['table']][key];
+		delete this[key];
 		fs.writeFileSync(this['path'], JSON.stringify(data, null, '\t'));
 		return this;
 	}
@@ -232,9 +233,12 @@ class JNDBClient {
 	 * @returns {this}
 	 */
 	insert(key, value) {
+		this[_checkUnused]();
 		let data = fs.readFileSync(this['path']);
 		data = JSON.parse(data);
 		data[this['table']][key] = value;
+		this[key] = value;
+		this.lastUsedKeys.push(key);
 		fs.writeFileSync(this['path'], JSON.stringify(data, null, '\t'));
 		return this;
 	}
@@ -244,9 +248,14 @@ class JNDBClient {
 	 * @returns {*}
 	 */
 	fetch(key) {
+		this[_checkUnused]();
 		let data = fs.readFileSync(this['path']);
 		data = JSON.parse(data);
 		const val = data[this['table']][key];
+		if(!this[key] && val) {
+			this[key] = val;
+		}
+		val ? this.lastUsedKeys.push(key) : '';
 		return val || undefined;
 	}
 	/**
@@ -289,4 +298,16 @@ class JNDBClient {
 			enumerable:false,
 		});
 	}
+	[_checkUnused]() {
+		const lastUsed = this.lastUsedKeys;
+		if(lastUsed.length >= 5) {
+			const lastvalue = lastUsed.splice(0, 1);
+			const has = lastUsed.find(x=>x == lastvalue[0]);
+			if(has) {return;}
+			delete this[lastvalue];
+		}
+	}
 }
+
+exports.Database = JNDB;
+exports.Connection = JNDBClient;
