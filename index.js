@@ -188,6 +188,9 @@ class JNDBClient {
 			throw new TypeError('table is not of type string');
 		}
 		options.path ? '' : options.path = '.';
+		if(!fs.existsSync(this['path'])) {
+			fs.writeFileSync(this['path'], JSON.stringify({}, null, '\t'));
+		}
 		this[_defineProp]('lastUsedKeys', []);
 		this[_init](table, options);
 	}
@@ -198,8 +201,7 @@ class JNDBClient {
 	 */
 	get count() {
 		let amount = 0;
-		let data = fs.readFileSync(this['path']);
-		data = JSON.parse(data);
+		const data = require(this['path']);
 		for(const i in data[this['table']]) {
 			amount++;
 		}
@@ -211,8 +213,7 @@ class JNDBClient {
 	 * @returns {this}
 	 */
 	delete(key) {
-		let data = fs.readFileSync(this['path']);
-		data = JSON.parse(data);
+		const data = require(this['path']);
 		if(!data[this['table']][key]) {return this;}
 		delete data[this['table']][key];
 		delete this[key];
@@ -225,8 +226,7 @@ class JNDBClient {
 	 * @returns {boolean}
 	 */
 	has(key) {
-		let data = fs.readFileSync(this['path']);
-		data = JSON.parse(data);
+		let data = require(this['path']);
 		data = data[this['table']];
 		return data[key] ? true : false;
 	}
@@ -238,12 +238,11 @@ class JNDBClient {
 	 */
 	insert(key, value) {
 		this[_checkUnused]();
-		let data = fs.readFileSync(this['path']);
-		data = JSON.parse(data);
+		const data = require(this['path']);
 		data[this['table']][key] = value;
 		this[key] = value;
 		this.lastUsedKeys.push(key);
-		fs.writeFileSync(this['path'], JSON.stringify(data, null, '\t'));
+		this[_writeFile](data);
 		return this;
 	}
 	/**
@@ -253,8 +252,7 @@ class JNDBClient {
 	 */
 	fetch(key) {
 		this[_checkUnused]();
-		let data = fs.readFileSync(this['path']);
-		data = JSON.parse(data);
+		const data = require(this['path']);
 		const val = data[this['table']][key];
 		if(!this[key] && val) {
 			this[key] = val;
@@ -267,8 +265,7 @@ class JNDBClient {
 	 */
 	fetchArray() {
 		const arr = [];
-		let data = fs.readFileSync(this['path']);
-		data = JSON.parse(data);
+		let data = require(this['path']);
 		data = data[this['table']];
 		for(const i in data) {
 			arr.push({ [i]:data[i] });
@@ -281,8 +278,7 @@ class JNDBClient {
  	* @memberof JNDBClient
  	*/
 	fetchAll() {
-		let data = fs.readFileSync(this['path']);
-		data = JSON.parse(data);
+		let data = require(this['path']);
 		data = data[this['table']];
 		// for(const i in data[this['table']]) {
 		// this[i] = data[this['table']][i];
@@ -294,6 +290,11 @@ class JNDBClient {
 		this[_defineProp]('path', `${options.path}/jndb.json`, false);
 		if(options.fetchAll) {
 			this.fetchAll();
+		}
+		const data = require(this['path']);
+		if(!data[table]) {
+			data[table] = {};
+			this[_writeFile](data);
 		}
 	}
 	[_defineProp](prop, value) {
@@ -310,6 +311,9 @@ class JNDBClient {
 			if(has) {return;}
 			delete this[lastvalue];
 		}
+	}
+	[_writeFile](data) {
+		fs.writeFileSync(this['path'], JSON.stringify(data, null, '\t'));
 	}
 }
 
