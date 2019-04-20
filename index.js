@@ -44,7 +44,26 @@ class JNDB {
 	get size() {
 		return this.array().length;
 	}
+	[Symbol.iterator]() {
+		// get the properties of the object
+		const properties = Object.keys(this);
+		let count = 0;
+		// set to true when the loop is done
+		let isDone = false;
 
+		// define the next method, need for iterator
+		const next = () => {
+			// control on last property reach
+			if(count >= properties.length) {
+				isDone = true;
+			}
+			return { done:isDone, value: this[properties[count++]] };
+		};
+
+		// return the next method used to iterate
+		return { next };
+
+	}
 	/**
        * inserts a K,V pair into the selected table,automatically updates/replaces as needed
      * @param {string|number} key
@@ -169,7 +188,7 @@ class Result {
 }
 /**
  *
- *	Uncache version of the latter, better for a big database
+ *	Noncache version of the latter, better for a big database
  * @class JNDBClient
  */
 class JNDBClient {
@@ -195,8 +214,28 @@ class JNDBClient {
 		this[_defineProp]('lastUsedKeys', []);
 		this[_init](table, options);
 	}
+	[Symbol.iterator]() {
+		// get the properties of the object
+		const properties = Object.keys(this);
+		let count = 0;
+		// set to true when the loop is done
+		let isDone = false;
+
+		// define the next method, need for iterator
+		const next = () => {
+			// control on last property reach
+			if(count >= properties.length) {
+				isDone = true;
+			}
+			return { done:isDone, value: this[properties[count++]] };
+		};
+
+		// return the next method used to iterate
+		return { next };
+
+	}
 	/**
-	 *
+	 * gets the amount of entries from the database directly
 	 * @readonly
 	 * @memberof JNDB
 	 */
@@ -209,7 +248,7 @@ class JNDBClient {
 		return amount;
 	}
 	/**
-	 *
+	 *	deletes a key from the database
 	 * @param {string|number} key
 	 * @returns {this}
 	 */
@@ -222,7 +261,7 @@ class JNDBClient {
 		return this;
 	}
 	/**
-	 *
+	 * checks if the database has a value
 	 * @param {string|number} key
 	 * @returns {boolean}
 	 */
@@ -232,7 +271,7 @@ class JNDBClient {
 		return data[key] ? true : false;
 	}
 	/**
-	 *
+	 * insert a value into the database
 	 * @param {string|number} key
 	 * @param {*} value
 	 * @returns {this}
@@ -247,7 +286,7 @@ class JNDBClient {
 		return this;
 	}
 	/**
-	 *
+	 * fetch a value from the database and adds it to this.
 	 * @param {string|number} key
 	 * @returns {*}
 	 */
@@ -262,6 +301,7 @@ class JNDBClient {
 		return val || undefined;
 	}
 	/**
+	 * fetch all table objects from the database directly and inserts  them into an array in the form of:`[ { key:string|number,value:any } ]`
 	 * @returns {Array<{}>}
 	 */
 	fetchArray() {
@@ -274,7 +314,7 @@ class JNDBClient {
 		return arr;
 	}
 	/**
- 	*
+ 	* fetch all table objects from the database directly
  	* @returns {{}}
  	* @memberof JNDBClient
  	*/
