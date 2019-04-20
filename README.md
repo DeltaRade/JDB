@@ -91,18 +91,26 @@ Noncache version of the latter, better for a big database
 
 ### `get count()`
 
+gets the amount of entries from the database directly
+
 
 ### `delete(key)`
+
+deletes a key from the database
 
  * **Parameters:** `key` — `string|number` — 
  * **Returns:** `this` — 
 
 ### `has(key)`
 
+checks if the database has a value
+
  * **Parameters:** `key` — `string|number` — 
  * **Returns:** `boolean` — 
 
 ### `insert(key, value)`
+
+insert a value into the database
 
  * **Parameters:**
    * `key` — `string|number` — 
@@ -111,16 +119,23 @@ Noncache version of the latter, better for a big database
 
 ### `fetch(key)`
 
+fetch a value from the database and adds it to this.
+
  * **Parameters:** `key` — `string|number` — 
  * **Returns:** `*` — 
 
 ### `fetchArray()`
 
+fetch all table objects from the database directly and inserts them into an array in the form of:`[ { key:string|number,value:any } ]`
+
  * **Returns:** `Array<{}>` — 
 
 ### `fetchAll()`
 
+fetch all table objects from the database directly
+
  * **Returns:** `{}` — 
+
 # Example
 ## `Database`
 `index.js`
