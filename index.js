@@ -1,4 +1,5 @@
 const fs = require('fs');
+const Path = require('path');
 const { EventEmitter } = require('events');
 const _defineProp = Symbol('_defineProp');
 const _writeFile = Symbol('writeFile');
@@ -26,7 +27,7 @@ class JNDB {
 		this[_defineProp]('path', `${path}/jndb.json`, false);
 		this[_defineProp]('events', new EventEmitter());
 		this['events'].on('write', (value)=>{
-			const data = require(this['path']);
+			const data = require(Path.resolve(this['path']));
 			data[this['table']] ? '' : data[this['table']] = {};
 			data[this['table']] = value;
 			fs.writeFileSync(this['path'], JSON.stringify(data, null, '\t'));
@@ -97,7 +98,7 @@ class JNDB {
 	 * @returns {{}}
 	 */
 	getAllTables() {
-		const data = require(this['path']);
+		const data = require(Path.resolve(this['path']));
 		return data;
 	}
 	/**
@@ -241,7 +242,7 @@ class JNDBClient {
 	 */
 	get count() {
 		let amount = 0;
-		const data = require(this['path']);
+		const data = require(Path.resolve(this['path']));
 		for(const i in data[this['table']]) {
 			amount++;
 		}
@@ -253,7 +254,7 @@ class JNDBClient {
 	 * @returns {this}
 	 */
 	delete(key) {
-		const data = require(this['path']);
+		const data = require(Path.resolve(this['path']));
 		if(!data[this['table']][key]) {return this;}
 		delete data[this['table']][key];
 		delete this[key];
@@ -266,7 +267,7 @@ class JNDBClient {
 	 * @returns {boolean}
 	 */
 	has(key) {
-		let data = require(this['path']);
+		let data = require(Path.resolve(this['path']));
 		data = data[this['table']];
 		return data[key] ? true : false;
 	}
@@ -278,7 +279,7 @@ class JNDBClient {
 	 */
 	insert(key, value) {
 		this[_checkUnused]();
-		const data = require(this['path']);
+		const data = require(Path.resolve(this['path']));
 		data[this['table']][key] = value;
 		this[key] = value;
 		this.lastUsedKeys.push(key);
@@ -292,7 +293,7 @@ class JNDBClient {
 	 */
 	fetch(key) {
 		this[_checkUnused]();
-		const data = require(this['path']);
+		const data = require(Path.resolve(this['path']));
 		const val = data[this['table']][key];
 		if(!this[key] && val) {
 			this[key] = val;
@@ -306,7 +307,7 @@ class JNDBClient {
 	 */
 	fetchArray() {
 		const arr = [];
-		let data = require(this['path']);
+		let data = require(Path.resolve(this['path']));
 		data = data[this['table']];
 		for(const i in data) {
 			arr.push({ [i]:data[i] });
@@ -319,7 +320,7 @@ class JNDBClient {
  	* @memberof JNDBClient
  	*/
 	fetchAll() {
-		let data = require(this['path']);
+		let data = require(Path.resolve(this['path']));
 		data = data[this['table']];
 		// for(const i in data[this['table']]) {
 		// this[i] = data[this['table']][i];
@@ -331,7 +332,7 @@ class JNDBClient {
 		if(options.fetchAll) {
 			this.fetchAll();
 		}
-		const data = require(this['path']);
+		const data = require(Path.resolve(this['path']));
 		if(!data[table]) {
 			data[table] = {};
 			this[_writeFile](data);
