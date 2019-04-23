@@ -327,6 +327,26 @@ class JNDBClient {
 		// }
 		return data;
 	}
+	/**
+	 * short-hand helper for `if(!key){Connection.insert(key,value); Connection.get(key)}`
+	 *
+	 * @param {string|number} key
+	 * @param {any} defaultValue
+	 * @returns {any}
+	 * @example
+	 * let db=new jndb.Connection('users')
+	 * let value=db.secure('user1',{})
+	 * console.log(value)// {}
+	 *
+	 */
+	secure(key, defaultValue) {
+		const oldVal = this.fetch(key);
+		if(!oldVal) {
+			this.insert(key, defaultValue);
+			return defaultValue;
+		}
+		return oldVal;
+	}
 	[_init](table, options) {
 		this[_defineProp]('table', table);
 		if(options.fetchAll) {
