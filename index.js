@@ -209,6 +209,12 @@ class JNDBClient {
 		}
 		options.path ? '' : options.path = '.';
 		this[_defineProp]('path', `${options.path}/jndb.json`, false);
+		this[_defineProp]('events', new EventEmitter());
+		this.events.on('write', (value)=>{
+			let data = require(Path.resolve(this.path));
+			data = value;
+			fs.writeFileSync(this['path'], JSON.stringify(data, null, '\t'));
+		});
 		if(!fs.existsSync(this['path'])) {
 			fs.writeFileSync(this['path'], JSON.stringify({}, null, '\t'));
 		}
@@ -258,7 +264,7 @@ class JNDBClient {
 		if(!data[this['table']][key]) {return this;}
 		delete data[this['table']][key];
 		delete this[key];
-		fs.writeFileSync(this['path'], JSON.stringify(data, null, '\t'));
+		this[_writeFile](data);
 		return this;
 	}
 	/**
@@ -374,7 +380,7 @@ class JNDBClient {
 		}
 	}
 	[_writeFile](data) {
-		fs.writeFileSync(this['path'], JSON.stringify(data, null, '\t'));
+		this.events.emit('write', data);
 	}
 }
 exports.Database = JNDB;
