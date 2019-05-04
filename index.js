@@ -353,6 +353,23 @@ class JNDBClient {
 		}
 		return oldVal;
 	}
+	/**
+	 *
+	 * @param {(value:any,key:string)=>void} fn
+	 * @param {any} thisArg
+	 * @returns {{}}
+	 */
+	filter(fn, thisArg) {
+		const obj = {};
+		const values = this.fetchAll();
+		if(thisArg) {fn = fn.bind(thisArg);}
+		for(const i in values) {
+			if(fn(values[i], i)) {
+				obj[i] = values[i];
+			}
+		}
+		return obj;
+	}
 	[_init](table, options) {
 		this[_defineProp]('table', table);
 		if(options.fetchAll) {
@@ -385,3 +402,6 @@ class JNDBClient {
 }
 exports.Database = JNDB;
 exports.Connection = JNDBClient;
+
+const x = new JNDBClient('users');
+x.filter((v=>v == 'one'));
