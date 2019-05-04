@@ -402,6 +402,3 @@ class JNDBClient {
 }
 exports.Database = JNDB;
 exports.Connection = JNDBClient;
-
-const x = new JNDBClient('users');
-x.filter((v=>v == 'one'));
