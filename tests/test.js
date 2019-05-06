@@ -1,0 +1,1 @@
+const jndb = require('../index');
