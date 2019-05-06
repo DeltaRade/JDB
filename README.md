@@ -1,6 +1,6 @@
 # Documentation
 - [Documentation](#documentation)
-  - [`class JNDB` (`Database`)](#class-jndb-database)
+  - [`class Database`](#class-database)
     - [`constructor(table, path = '.')`](#constructortable-path)
     - [`get size()`](#get-size)
     - [`insert(key, value)`](#insertkey-value)
@@ -9,7 +9,7 @@
     - [`get(key)`](#getkey)
     - [`remove(key)`](#removekey)
     - [`find(fn, thisArg)`](#findfn-thisarg)
-  - [`class JNDBClient` (`Connection`)](#class-jndbclient-connection)
+  - [`class Connection`](#class-connection)
     - [`constructor(table, options)`](#constructortable-options)
     - [`get count()`](#get-count)
     - [`delete(key)`](#deletekey)
@@ -22,7 +22,7 @@
   - [`Database`](#database)
   - [`Connection`](#connection)
 - [Issues](#issues)
-## `class JNDB` (`Database`)
+## `class Database`
 main class
 
 ### `constructor(table, path = '.')`
@@ -78,7 +78,7 @@ remove a key from the table.
    * `[thisArg]` — `*` — 
  * **Returns:** `*` — 
 
-## `class JNDBClient` (`Connection`)
+## `class Connection`
 
 Noncache version of the latter, better for a big database
 
@@ -160,7 +160,7 @@ const jndb=require('jndb')
 let db=new jndb.Connection('users')
 db.fetchAll()
 // {john:'doe'}
+db.insert('joe',{})
 ```
 # Issues
 You can post issues [here](https://github.com/DeltaRade/jndb/issues).
-If you have any questions you can join [the discord server](https://discord.gg/6n4Eda5).
