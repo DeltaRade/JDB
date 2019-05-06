@@ -7,9 +7,9 @@ const _init = Symbol('init');
 const _checkUnused = Symbol('checkUnused');
 
 /**
- * @class JNDB
- */
-class JNDB {
+ * @class
+ *  */
+class Database {
 
 	/**
      *Creates an instance of JNDB. A difference from this, JNDBClient, doesn't load all the database contents making it perfect for huge amounts of data
@@ -40,7 +40,6 @@ class JNDB {
 	/**
 	 *
 	 * @readonly
-	 * @memberof JNDB
 	 */
 	get size() {
 		return this.array().length;
@@ -155,44 +154,12 @@ class JNDB {
 		// fs.writeFileSync(this['path'], JSON.stringify(value, null, '\t'));
 	}
 }
-class Result {
-	constructor(object) {
-		if(typeof object != 'object') {throw new TypeError('value give is not of type object');}
-		this.fullResult = {};
-		this.keys = [];
-		this.values = [];
-		for(const i in object) {
-			this.fullResult[i] = object[i];
-			this.keys.push(i);
-			this.values.push(object[i]);
-		}
-	}
-
-	/**
-	 *
-	 * @param {(value:any,key:string|number,this:this)=>boolean} fn
-	 * @param {*} [thisArg]
-	 * @returns {Result}
-	 */
-	filter(fn, thisArg) {
-		if (thisArg) fn = fn.bind(thisArg);
-		const results = new Result({});
-		for (const key in this) {
-			if (fn(this[key], key, this)) results[key] = this[key];
-		}
-		return results;
-	}
-
-	has(key) {
-		return this.fullResult[key] ? true : false;
-	}
-}
 /**
  *
  *	Noncache version of the latter, better for a big database
- * @class JNDBClient
+ * @class Connection
  */
-class JNDBClient {
+class Connection {
 	/**
 	 *Creates an instance of JNDBClient.
 	 * @param {string} table
@@ -353,23 +320,7 @@ class JNDBClient {
 		}
 		return oldVal;
 	}
-	/**
-	 *
-	 * @param {(value:any,key:string)=>void} fn
-	 * @param {any} thisArg
-	 * @returns {{}}
-	 */
-	filter(fn, thisArg) {
-		const obj = {};
-		const values = this.fetchAll();
-		if(thisArg) {fn = fn.bind(thisArg);}
-		for(const i in values) {
-			if(fn(values[i], i)) {
-				obj[i] = values[i];
-			}
-		}
-		return obj;
-	}
+
 	[_init](table, options) {
 		this[_defineProp]('table', table);
 		if(options.fetchAll) {
@@ -400,5 +351,5 @@ class JNDBClient {
 		this.events.emit('write', data);
 	}
 }
-exports.Database = JNDB;
-exports.Connection = JNDBClient;
+exports.Database = Database;
+exports.Connection = Connection;
