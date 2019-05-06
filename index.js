@@ -154,6 +154,7 @@ class Database {
 		// fs.writeFileSync(this['path'], JSON.stringify(value, null, '\t'));
 	}
 }
+
 /**
  *
  *	Noncache version of the latter, better for a big database
@@ -164,7 +165,6 @@ class Connection {
 	 *Creates an instance of JNDBClient.
 	 * @param {string} table
 	 * @param {{path:'.',fetchAll:false}} options
-	 * @memberof JNDBClient
 	 */
 	constructor(table, options = { path:'.', fetchAll:false }) {
 		if(!table) {
@@ -211,7 +211,6 @@ class Connection {
 	/**
 	 * gets the amount of entries from the database directly
 	 * @readonly
-	 * @memberof JNDB
 	 */
 	get count() {
 		let amount = 0;
