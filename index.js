@@ -10,29 +10,28 @@ const _checkUnused = Symbol('checkUnused');
  * @class
  *  */
 class Database {
-
 	/**
-     *Creates an instance of JNDB. A difference from this, JNDBClient, doesn't load all the database contents making it perfect for huge amounts of data
-     *@param {string} table table to be used for saving/retrieving data from
-     * @param {string} [path='.']
-     */
+	 *Creates an instance of JNDB. A difference from this, JNDBClient, doesn't load all the database contents making it perfect for huge amounts of data
+	 *@param {string} table table to be used for saving/retrieving data from
+	 * @param {string} [path='.']
+	 */
 	constructor(table, path = '.') {
-		if(!table) {
+		if (!table) {
 			const err = new Error('Missing table name');
 			throw err;
 		}
-		if(typeof table !== 'string') {
+		if (typeof table !== 'string') {
 			throw new TypeError('table is not of type string');
 		}
 		this[_defineProp]('path', `${path}/jndb.json`, false);
 		this[_defineProp]('events', new EventEmitter());
-		this['events'].on('write', (value)=>{
+		this['events'].on('write', value => {
 			const data = require(Path.resolve(this['path']));
-			data[this['table']] ? '' : data[this['table']] = {};
+			data[this['table']] ? '' : (data[this['table']] = {});
 			data[this['table']] = value;
 			fs.writeFileSync(this['path'], JSON.stringify(data, null, '\t'));
 		});
-		if(!fs.existsSync(this['path'])) {
+		if (!fs.existsSync(this['path'])) {
 			this[_writeFile]({});
 		}
 		this[_init](table);
@@ -54,24 +53,23 @@ class Database {
 		// define the next method, need for iterator
 		const next = () => {
 			// control on last property reach
-			if(count >= properties.length) {
+			if (count >= properties.length) {
 				isDone = true;
 			}
-			return { done:isDone, value: this[properties[count++]] };
+			return { done: isDone, value: this[properties[count++]] };
 		};
 
 		// return the next method used to iterate
 		return { next };
-
 	}
 	/**
-       * inserts a K,V pair into the selected table,automatically updates/replaces as needed
-     * @param {string|number} key
-     * @param {*} value
+	 * inserts a K,V pair into the selected table,automatically updates/replaces as needed
+	 * @param {string|number} key
+	 * @param {*} value
 	 * @returns {this}
-     */
+	 */
 	insert(key, value) {
-		if(!['string', 'number'].includes(typeof key)) {
+		if (!['string', 'number'].includes(typeof key)) {
 			throw new TypeError('Key is neither a number or a string');
 		}
 		this[key] = value;
@@ -80,15 +78,15 @@ class Database {
 	}
 
 	/**
-     * converts the DB into array form
-     * where format is ``[{table: (string), rows: ({})}]``
-     *
-     * @returns {Array<{table:string,rows:{}}>}
-     */
+	 * converts the DB into array form
+	 * where format is ``[{table: (string), rows: ({})}]``
+	 *
+	 * @returns {Array<{table:string,rows:{}}>}
+	 */
 	array() {
 		const arr = [];
-		for(const i in this) {
-			arr.push({ [i]:this[i] });
+		for (const i in this) {
+			arr.push({ [i]: this[i] });
 		}
 		return arr;
 	}
@@ -102,19 +100,21 @@ class Database {
 	}
 	/**
 	 * gets the value of the key, if no key is present it returns `undefined`
-     * @param {string|number} key
-     * @returns {*}
-     */
+	 * @param {string|number} key
+	 * @returns {*}
+	 */
 	get(key) {
 		return this[key] || undefined;
 	}
 	/**
 	 * remove a key from the table.
-     * @param {string|number} key
+	 * @param {string|number} key
 	 * @returns {this}
-     */
+	 */
 	remove(key) {
-		if(!this[key]) {return this;}
+		if (!this[key]) {
+			return this;
+		}
 		delete this[key];
 		this[_writeFile](this);
 		return this;
@@ -138,15 +138,14 @@ class Database {
 		let data = fs.readFileSync(this['path']);
 		data = JSON.parse(data);
 		// this[table] = data[table] ? data[table] : {};
-		for(const i in data[table]) {
+		for (const i in data[table]) {
 			this[i] = data[table][i];
 		}
-
 	}
 	[_defineProp](prop, value) {
 		Object.defineProperty(this, prop, {
-			value:value,
-			enumerable:false,
+			value: value,
+			enumerable: false,
 		});
 	}
 	[_writeFile](value) {
@@ -164,25 +163,29 @@ class Connection {
 	/**
 	 *Creates an instance of JNDBClient.
 	 * @param {string} table
-	 * @param {{path:'.',fetchAll:false}} options
+	 * @param {{path:'.',fileName:string,fetchAll:false}} options
 	 */
-	constructor(table, options = { path:'.', fetchAll:false }) {
-		if(!table) {
+	constructor(
+		table,
+		options = { path: '.', fileName: 'jndb.json', fetchAll: false }
+	) {
+		if (!table) {
 			const err = new Error('Missing table name');
 			throw err;
 		}
-		if(typeof table !== 'string') {
+		if (typeof table !== 'string') {
 			throw new TypeError('table is not of type string');
 		}
-		options.path ? '' : options.path = '.';
-		this[_defineProp]('path', `${options.path}/jndb.json`, false);
+		options.fileName ? '' : (options.fileName = 'jndb.json');
+		options.path ? '' : (options.path = '.');
+		this[_defineProp]('path', `${options.path}/${options.fileName}`, false);
 		this[_defineProp]('events', new EventEmitter());
-		this.events.on('write', (value)=>{
+		this.events.on('write', value => {
 			let data = require(Path.resolve(this.path));
 			data = value;
 			fs.writeFileSync(this['path'], JSON.stringify(data, null, '\t'));
 		});
-		if(!fs.existsSync(this['path'])) {
+		if (!fs.existsSync(this['path'])) {
 			fs.writeFileSync(this['path'], JSON.stringify({}, null, '\t'));
 		}
 		this[_defineProp]('lastUsedKeys', []);
@@ -198,15 +201,14 @@ class Connection {
 		// define the next method, need for iterator
 		const next = () => {
 			// control on last property reach
-			if(count >= properties.length) {
+			if (count >= properties.length) {
 				isDone = true;
 			}
-			return { done:isDone, value: this[properties[count++]] };
+			return { done: isDone, value: this[properties[count++]] };
 		};
 
 		// return the next method used to iterate
 		return { next };
-
 	}
 	/**
 	 * gets the amount of entries from the database directly
@@ -215,7 +217,7 @@ class Connection {
 	get count() {
 		let amount = 0;
 		const data = require(Path.resolve(this['path']));
-		for(const i in data[this['table']]) {
+		for (const i in data[this['table']]) {
 			amount++;
 		}
 		return amount;
@@ -227,7 +229,9 @@ class Connection {
 	 */
 	delete(key) {
 		const data = require(Path.resolve(this['path']));
-		if(!data[this['table']][key]) {return this;}
+		if (!data[this['table']][key]) {
+			return this;
+		}
 		delete data[this['table']][key];
 		delete this[key];
 		this[_writeFile](data);
@@ -267,7 +271,7 @@ class Connection {
 		this[_checkUnused]();
 		const data = require(Path.resolve(this['path']));
 		const val = data[this['table']][key];
-		if(!this[key] && val) {
+		if (!this[key] && val) {
 			this[key] = val;
 		}
 		val ? this.lastUsedKeys.push(key) : '';
@@ -281,16 +285,16 @@ class Connection {
 		const arr = [];
 		let data = require(Path.resolve(this['path']));
 		data = data[this['table']];
-		for(const i in data) {
-			arr.push({ [i]:data[i] });
+		for (const i in data) {
+			arr.push({ [i]: data[i] });
 		}
 		return arr;
 	}
 	/**
- 	* fetch all table objects from the database directly
- 	* @returns {{}}
- 	* @memberof JNDBClient
- 	*/
+	 * fetch all table objects from the database directly
+	 * @returns {{}}
+	 * @memberof JNDBClient
+	 */
 	fetchAll() {
 		let data = require(Path.resolve(this['path']));
 		data = data[this['table']];
@@ -313,7 +317,7 @@ class Connection {
 	 */
 	secure(key, defaultValue) {
 		const oldVal = this.fetch(key);
-		if(!oldVal) {
+		if (!oldVal) {
 			this.insert(key, defaultValue);
 			return defaultValue;
 		}
@@ -322,27 +326,29 @@ class Connection {
 
 	[_init](table, options) {
 		this[_defineProp]('table', table);
-		if(options.fetchAll) {
+		if (options.fetchAll) {
 			this.fetchAll();
 		}
 		const data = require(Path.resolve(this['path']));
-		if(!data[table]) {
+		if (!data[table]) {
 			data[table] = {};
 			this[_writeFile](data);
 		}
 	}
 	[_defineProp](prop, value) {
 		Object.defineProperty(this, prop, {
-			value:value,
-			enumerable:false,
+			value: value,
+			enumerable: false,
 		});
 	}
 	[_checkUnused]() {
 		const lastUsed = this.lastUsedKeys;
-		if(lastUsed.length >= 5) {
+		if (lastUsed.length >= 5) {
 			const lastvalue = lastUsed.splice(0, 1);
-			const has = lastUsed.find(x=>x == lastvalue[0]);
-			if(has) {return;}
+			const has = lastUsed.find(x => x == lastvalue[0]);
+			if (has) {
+				return;
+			}
 			delete this[lastvalue];
 		}
 	}
