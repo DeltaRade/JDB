@@ -193,7 +193,8 @@ class Connection {
 	}
 	[Symbol.iterator]() {
 		// get the properties of the object
-		const properties = Object.keys(this);
+		const props = this.fetchAll();
+		const properties = Object.keys(props);
 		let count = 0;
 		// set to true when the loop is done
 		let isDone = false;
@@ -204,7 +205,7 @@ class Connection {
 			if (count >= properties.length) {
 				isDone = true;
 			}
-			return { done: isDone, value: this[properties[count++]] };
+			return { done: isDone, value: props[properties[count++]] };
 		};
 
 		// return the next method used to iterate
