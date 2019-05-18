@@ -208,12 +208,9 @@ class Connection {
 	 * @readonly
 	 */
 	get count() {
-		let amount = 0;
 		const data = require(Path.resolve(this['path']));
-		for (const i in data[this['table']]) {
-			amount++;
-		}
-		return amount;
+		const length = Object.keys(data[this.table]).length;
+		return length;
 	}
 	/**
 	 * selects the table to use
