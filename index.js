@@ -5,7 +5,7 @@ const _defineProp = Symbol('_defineProp');
 const _writeFile = Symbol('writeFile');
 const _init = Symbol('init');
 const _checkUnused = Symbol('checkUnused');
-
+const _noTable = Symbol('noTable');
 /**
  * @class
  *  */
@@ -166,16 +166,8 @@ class Connection {
 	 * @param {{path:'.',fileName:string,fetchAll:false}} options
 	 */
 	constructor(
-		table,
 		options = { path: '.', fileName: 'jndb.json', fetchAll: false }
 	) {
-		if (!table) {
-			const err = new Error('Missing table name');
-			throw err;
-		}
-		if (typeof table !== 'string') {
-			throw new TypeError('table is not of type string');
-		}
 		options.fileName ? '' : (options.fileName = 'jndb.json');
 		options.path ? '' : (options.path = '.');
 		this[_defineProp]('path', `${options.path}/${options.fileName}`, false);
@@ -189,7 +181,7 @@ class Connection {
 			fs.writeFileSync(this['path'], JSON.stringify({}, null, '\t'));
 		}
 		this[_defineProp]('lastUsedKeys', []);
-		this[_init](table, options);
+		this[_init](options);
 	}
 	[Symbol.iterator]() {
 		// get the properties of the object
@@ -224,11 +216,34 @@ class Connection {
 		return amount;
 	}
 	/**
+	 * selects the table to use
+	 * @param {string} tableName
+	 * @returns {this}
+	 * @example
+	 * let x=new jndb.Connection()
+	 * x.use('users')
+	 * if(x.has('john')){
+	 *	x.use('specialUsers')
+	 *	if(x.has('john')){
+	*	console.log('john is special')
+	*	}
+	 * }
+	 */
+	use(tableName) {
+		this[_defineProp]('table', tableName, true);
+		const data = require(Path.resolve(this['path']));
+		if (!data[tableName]) {
+			data[tableName] = {};
+			this[_writeFile](data);
+		}
+	}
+	/**
 	 *	deletes a key from the database
 	 * @param {string|number} key
 	 * @returns {this}
 	 */
 	delete(key) {
+		this[_noTable]();
 		const data = require(Path.resolve(this['path']));
 		if (!data[this['table']][key]) {
 			return this;
@@ -244,6 +259,7 @@ class Connection {
 	 * @returns {boolean}
 	 */
 	has(key) {
+		this[_noTable]();
 		let data = require(Path.resolve(this['path']));
 		data = data[this['table']];
 		return data[key] ? true : false;
@@ -255,6 +271,7 @@ class Connection {
 	 * @returns {this}
 	 */
 	insert(key, value) {
+		this[_noTable]();
 		this[_checkUnused]();
 		const data = require(Path.resolve(this['path']));
 		data[this['table']][key] = value;
@@ -269,6 +286,7 @@ class Connection {
 	 * @returns {*}
 	 */
 	fetch(key) {
+		this[_noTable]();
 		this[_checkUnused]();
 		const data = require(Path.resolve(this['path']));
 		const val = data[this['table']][key];
@@ -283,6 +301,7 @@ class Connection {
 	 * @returns {Array<{}>}
 	 */
 	fetchArray() {
+		this[_noTable]();
 		const arr = [];
 		let data = require(Path.resolve(this['path']));
 		data = data[this['table']];
@@ -297,6 +316,7 @@ class Connection {
 	 * @memberof JNDBClient
 	 */
 	fetchAll() {
+		this[_noTable]();
 		let data = require(Path.resolve(this['path']));
 		data = data[this['table']];
 		// for(const i in data[this['table']]) {
@@ -317,6 +337,7 @@ class Connection {
 	 *
 	 */
 	secure(key, defaultValue) {
+		this[_noTable]();
 		const oldVal = this.fetch(key);
 		if (!oldVal) {
 			this.insert(key, defaultValue);
@@ -325,21 +346,16 @@ class Connection {
 		return oldVal;
 	}
 
-	[_init](table, options) {
-		this[_defineProp]('table', table);
+	[_init](options) {
 		if (options.fetchAll) {
 			this.fetchAll();
 		}
-		const data = require(Path.resolve(this['path']));
-		if (!data[table]) {
-			data[table] = {};
-			this[_writeFile](data);
-		}
 	}
-	[_defineProp](prop, value) {
+	[_defineProp](prop, value, writable) {
 		Object.defineProperty(this, prop, {
 			value: value,
 			enumerable: false,
+			writable,
 		});
 	}
 	[_checkUnused]() {
@@ -355,6 +371,13 @@ class Connection {
 	}
 	[_writeFile](data) {
 		this.events.emit('write', data);
+	}
+	[_noTable]() {
+		if (!this['table']) {
+			throw new Error(
+				'[table] is not defined use Connection.use to define one'
+			);
+		}
 	}
 }
 exports.Database = Database;
