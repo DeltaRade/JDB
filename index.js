@@ -1,5 +1,6 @@
 const fs = require('fs');
 const Path = require('path');
+const zlib=require('zlib')
 const { EventEmitter } = require('events');
 const _defineProp = Symbol('_defineProp');
 const _writeFile = Symbol('writeFile');
@@ -7,7 +8,7 @@ const _init = Symbol('init');
 const _checkUnused = Symbol('checkUnused');
 const _noTable = Symbol('noTable');
 
-//@template {number|string} K 
+//@template {number|string} K
 /**
  *
  * @class Connection
@@ -18,14 +19,12 @@ class Connection {
 	 * @param {string} table
 	 * @param {{path:'.',fileName:string}} options
 	 */
-	constructor(
-		options = { path: '.', fileName: 'jndb.json' }
-	) {
+	constructor(options = { path: '.', fileName: 'jndb.json' }) {
 		options.fileName ? '' : (options.fileName = 'jndb.json');
 		options.path ? '' : (options.path = '.');
 		this[_defineProp]('path', `${options.path}/${options.fileName}`, false);
 		this[_defineProp]('events', new EventEmitter());
-		this.events.on('write', value => {
+		this.events.on('write', (value) => {
 			let data = require(Path.resolve(this.path));
 			data = value;
 			fs.writeFileSync(this['path'], JSON.stringify(data, null, '\t'));
@@ -75,8 +74,8 @@ class Connection {
 	 * if(x.has('john')){
 	 *	x.use('specialUsers')
 	 *	if(x.has('john')){
-	*	console.log('john is special')
-	*	}
+	 *	console.log('john is special')
+	 *	}
 	 * }
 	 */
 	use(tableName) {
@@ -195,7 +194,27 @@ class Connection {
 		}
 		return oldVal;
 	}
-
+	/**
+	 * compresses the database into a separate file called `jndb.dat`
+	 * @returns {Buffer}
+	 */
+	compress() {
+		const data = require(Path.resolve(this['path']));
+		let buff = zlib.gzipSync(JSON.stringify(data));
+		fs.writeFileSync('jndb.dat',buff)
+		return buff
+	}
+	/**
+	 * gets the compressed data from `jndb.bat` (if it exists)
+	 */
+	uncompress(){
+		if(!fs.existsSync(Path.resolve('./jndb.dat'))){
+			throw new Error('jndb.dat doesnt exist to extract data from')
+		}
+		const data=fs.readFileSync(Path.resolve('./jndb.dat'))
+		let buff=zlib.gunzipSync(data)
+		return buff
+	}
 	[_init](options) {
 		if (options.fetchAll) {
 			this.fetchAll();
@@ -212,7 +231,7 @@ class Connection {
 		const lastUsed = this.lastUsedKeys;
 		if (lastUsed.length >= 5) {
 			const lastvalue = lastUsed.splice(0, 1);
-			const has = lastUsed.find(x => x == lastvalue[0]);
+			const has = lastUsed.find((x) => x == lastvalue[0]);
 			if (has) {
 				return;
 			}
