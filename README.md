@@ -1,27 +1,16 @@
-- [Installation](#installation)
-- [Docs](#docs)
-  - [`class Database`](#class-database)
-    - [`constructor(table, path = '.')`](#constructortable-path)
-    - [`get size()`](#get-size)
-    - [`insert(key, value)`](#insertkey-value)
-    - [`array()`](#array)
-    - [`getAllTables()`](#getalltables)
-    - [`get(key)`](#getkey)
-    - [`remove(key)`](#removekey)
-    - [`find(fn, thisArg)`](#findfn-thisarg)
-  - [`class Connection`](#class-connection)
+- [Installation](#Installation)
+- [Docs](#Docs)
+  - [`class Connection`](#class-Connection)
     - [`constructor(table, options)`](#constructortable-options)
     - [`get count()`](#get-count)
     - [`delete(key)`](#deletekey)
     - [`has(key)`](#haskey)
-    - [`insert(key, value)`](#insertkey-value-1)
+    - [`insert(key, value)`](#insertkey-value)
     - [`fetch(key)`](#fetchkey)
-    - [`fetchArray()`](#fetcharray)
-    - [`fetchAll()`](#fetchall)
-- [Examples](#examples)
-  - [`Database`](#database)
-  - [`Connection`](#connection)
-- [Issues](#issues)
+    - [`fetchArray()`](#fetchArray)
+    - [`fetchAll()`](#fetchAll)
+- [Usage](#Usage)
+- [Issues](#Issues)
 
 # Installation
 
@@ -29,62 +18,6 @@ master: `npm i DeltaRade/jndb`<br>
 stable: `npm i jndb`
 
 # Docs
-
-## `class Database`
-
-main class
-
-### `constructor(table, path = '.')`
-
--   **Parameters:**
-    -   `table` — `string` — table to be used for saving/retrieving data from
-    -   `[path='.']` — `string` —
-
-### `get size()`
-
-### `insert(key, value)`
-
-inserts a K,V pair into the selected table,automatically updates/replaces as needed
-
--   **Parameters:**
-    -   `key` — `string|number` —
-    -   `value` — `*` —
--   **Returns:** `this` —
-
-### `array()`
-
-converts the DB into array form where format is `[{table: (string), rows: ({})}]`
-
--   **Returns:** `Array<{table:string,rows:{}}>` —
-
-### `getAllTables()`
-
-gets all of the Database's tables and exposes them in the format of `{ table:{key: value} }`
-
--   **Returns:** `{}` —
-
-### `get(key)`
-
-gets the value of the key, if no key is present it returns `undefined`
-
--   **Parameters:** `key` — `string|number` —
--   **Returns:** `*` —
-
-### `remove(key)`
-
-remove a key from the table.
-
--   **Parameters:** `key` — `string|number` —
--   **Returns:** `this` —
-
-### `find(fn, thisArg)`
-
-[Array.find()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find)
-
--   **Parameters:**
-    -   `fn` — `(value:*,key:string|number,this:this)=>boolean` —
-    -   `[thisArg]` — `*` —
--   **Returns:** `*` —
 
 ## `class Connection`
 
@@ -142,38 +75,30 @@ fetch all table objects from the database directly
 
 -   **Returns:** `{}` —
 
-# Examples
-
-## `Database`
-
-`index.js`
+# Usage
 
 ```js
-const jndb = require('jndb');
-let db = new jndb.Database('users');
-db.insert('john', 'doe');
-```
+const jndb = require('../index');
+const x = new jndb.Connection();
+// select the table that is going to be used
+x.use('users');
 
-`jndb.json`
 
-```json
-{
-	"users": {
-		"john": "doe"
-	}
+console.log(x.count);
+x.insert('mr john','doe')
+console.log(x.count)
+
+// returns undefined if value cannot be obtained
+console.log(x.fetch('unknown'))
+
+//fetch table items into an object
+let obj=x.fetchAll();
+for(let i in obj){
+    console.log(i,obj[i])
 }
-```
 
-## `Connection`
-
-`index.js`
-
-```js
-const jndb = require('jndb');
-let db = new jndb.Connection('users');
-db.fetchAll();
-// {john:'doe'}
-db.insert('joe', {});
+// fetch table items as an array of objects
+console.log(x.fetchArray())
 ```
 
 # Issues
