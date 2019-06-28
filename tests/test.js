@@ -24,7 +24,7 @@ console.log(x.fetchArray())
 x.compress()
 
 //return uncompressed data from that file
-console.log(x.uncompress())
+console.log(x.uncompress().json())
 
 
 /*const fs=require('fs')
