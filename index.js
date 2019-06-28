@@ -1,6 +1,6 @@
 const fs = require('fs');
 const Path = require('path');
-const zlib=require('zlib')
+const zlib = require('zlib');
 const { EventEmitter } = require('events');
 const _defineProp = Symbol('_defineProp');
 const _writeFile = Symbol('writeFile');
@@ -196,24 +196,24 @@ class Connection {
 	}
 	/**
 	 * compresses the database into a separate file called `jndb.dat`
-	 * @returns {Buffer}
+	 * @returns {CompressedJSON}
 	 */
 	compress() {
 		const data = require(Path.resolve(this['path']));
 		let buff = zlib.gzipSync(JSON.stringify(data));
-		fs.writeFileSync('jndb.dat',buff)
-		return buff
+		fs.writeFileSync('jndb.dat', buff);
+		return new CompressedJSON(buff);
 	}
 	/**
 	 * gets the compressed data from `jndb.bat` (if it exists)
 	 */
-	uncompress(){
-		if(!fs.existsSync(Path.resolve('./jndb.dat'))){
-			throw new Error('jndb.dat doesnt exist to extract data from')
+	uncompress() {
+		if (!fs.existsSync(Path.resolve('./jndb.dat'))) {
+			throw new Error('jndb.dat doesnt exist to extract data from');
 		}
-		const data=fs.readFileSync(Path.resolve('./jndb.dat'))
-		let buff=zlib.gunzipSync(data)
-		return buff
+		const data = fs.readFileSync(Path.resolve('./jndb.dat'));
+		let buff = zlib.gunzipSync(data);
+		return new CompressedJSON(buff);
 	}
 	[_init](options) {
 		if (options.fetchAll) {
@@ -250,3 +250,47 @@ class Connection {
 	}
 }
 exports.Connection = Connection;
+
+class CompressedJSON {
+	constructor(buffer) {
+		Object.defineProperty(this, 'buffer', {
+			value: buffer,
+			enumerable: false,
+		});
+	}
+	get tables() {
+		let tbls = [];
+		let obj = this.object();
+		for (let i in obj) {
+			tbls.push(i);
+		}
+		return tbls;
+	}
+	/**
+	 * @returns {{}}
+	 */
+	object() {
+		return JSON.parse(this.buffer.toString());
+	}
+	/**
+	 * @returns {string}
+	 */
+	json() {
+		return this.buffer.toString();
+	}
+	/**
+	 * searches for a given key in all of the tables and returns it
+	 * @param {string} key
+	 */
+	get(key){
+		let val=undefined
+		let obj=this.object();
+		for(let i in obj){
+			if(obj[i][key]){
+				val=obj[i][key]
+				break
+			}
+		}
+		return val;
+	}
+}
