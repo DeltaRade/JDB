@@ -282,13 +282,13 @@ class CompressedJSON {
 	 * searches for a given key in all of the tables and returns it
 	 * @param {string} key
 	 */
-	get(key){
-		let val=undefined
-		let obj=this.object();
-		for(let i in obj){
-			if(obj[i][key]){
-				val=obj[i][key]
-				break
+	get(key) {
+		let val = undefined;
+		let obj = this.object();
+		for (let i in obj) {
+			if (obj[i][key]) {
+				val = obj[i][key];
+				break;
 			}
 		}
 		return val;
