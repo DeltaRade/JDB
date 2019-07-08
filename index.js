@@ -88,7 +88,7 @@ class Connection {
 	}
 	/**
 	 *	deletes a key from the database
-	 * @param {K} key
+	 * @param {string|number} key
 	 * @returns {this}
 	 */
 	delete(key) {
