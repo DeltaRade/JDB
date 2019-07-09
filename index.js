@@ -34,6 +34,7 @@ class Connection {
 		}
 		this[_defineProp]('lastUsedKeys', []);
 		this[_init](options);
+		return this
 	}
 	[Symbol.iterator]() {
 		// get the properties of the object
@@ -85,6 +86,7 @@ class Connection {
 			data[tableName] = {};
 			this[_writeFile](data);
 		}
+		return this;
 	}
 	/**
 	 *	deletes a key from the database
