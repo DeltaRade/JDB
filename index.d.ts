@@ -2,7 +2,7 @@ declare class Connection {
 	/**
 	 *Creates an instance of Connection.
 	 */
-	constructor(options?: { path: string; fileName: string }):this;
+	constructor(options?: { path: string; fileName: string }): this;
 	readonly count: number;
 	use(tableName: string): this;
 	/**
@@ -51,10 +51,10 @@ declare class Connection {
 }
 export { Connection };
 declare class CompressedJSON {
-	private buffer:Buffer;
+	private buffer: Buffer;
 	constructor(buffer: Buffer);
 	readonly tables: string[];
-	
+
 	object(): {};
 	json(): string;
 	/**
