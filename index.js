@@ -31,7 +31,6 @@ class Connection {
 		if (!fs.existsSync(this['path'])) {
 			fs.writeFileSync(this['path'], JSON.stringify({}, null, '\t'));
 		}
-		this[_defineProp]('lastUsedKeys', []);
 		this[_init](options);
 		return this
 	}
@@ -126,7 +125,6 @@ class Connection {
 		const data = require(Path.resolve(this['path']));
 		data[this['table']][key] = value;
 		this[key] = value;
-		this.lastUsedKeys.push(key);
 		this[_writeFile](data);
 		return this;
 	}
@@ -137,13 +135,11 @@ class Connection {
 	 */
 	fetch(key) {
 		this[_noTable]();
-		this[_checkUnused]();
 		const data = require(Path.resolve(this['path']));
 		const val = data[this['table']][key];
 		if (!this[key] && val) {
 			this[key] = val;
 		}
-		val ? this.lastUsedKeys.push(key) : '';
 		return val || undefined;
 	}
 	/**
@@ -227,17 +223,6 @@ class Connection {
 			enumerable: false,
 			writable,
 		});
-	}
-	[_checkUnused]() {
-		const lastUsed = this.lastUsedKeys;
-		if (lastUsed.length >= 5) {
-			const lastvalue = lastUsed.splice(0, 1);
-			const has = lastUsed.find((x) => x == lastvalue[0]);
-			if (has) {
-				return;
-			}
-			delete this[lastvalue];
-		}
 	}
 	[_writeFile](data) {
 		this.events.emit('write', data);
