@@ -98,7 +98,6 @@ class Connection {
 			return this;
 		}
 		delete data[this['table']][key];
-		delete this[key];
 		this[_writeFile](data);
 		return this;
 	}
@@ -121,7 +120,6 @@ class Connection {
 	 */
 	insert(key, value) {
 		this[_noTable]();
-		this[_checkUnused]();
 		const data = require(Path.resolve(this['path']));
 		data[this['table']][key] = value;
 		this[key] = value;
