@@ -60,7 +60,7 @@ class Connection {
 	 */
 	get count() {
 		const data = require(Path.resolve(this['path']));
-		const length = Object.keys(data[this.table]).length;
+		const length = Object.keys(data[this['table']]).length;
 		return length;
 	}
 	/**
@@ -122,7 +122,6 @@ class Connection {
 		this[_noTable]();
 		const data = require(Path.resolve(this['path']));
 		data[this['table']][key] = value;
-		this[key] = value;
 		this[_writeFile](data);
 		return this;
 	}
