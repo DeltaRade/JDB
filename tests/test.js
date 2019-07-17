@@ -1,5 +1,7 @@
 const jndb = require('../index');
 const x = new jndb.Connection();
+const zlib=require('zlib');
+const fs=require('fs')
 // select the table that is going to be used
 x.use('users');
 
@@ -25,6 +27,14 @@ x.compress()
 
 //return uncompressed data from that file
 console.log(x.uncompress().json())
+
+
+let str=fs.readFileSync('test.json')
+let deflate=zlib.deflateSync(str)
+fs.writeFileSync('deflate.dat',deflate)
+let defdat=fs.readFileSync('deflate.dat')
+let inflate=zlib.inflateSync(defdat)
+console.log(deflate.toString())
 
 
 /*const fs=require('fs')
