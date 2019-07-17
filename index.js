@@ -5,7 +5,6 @@ const { EventEmitter } = require('events');
 const _defineProp = Symbol('_defineProp');
 const _writeFile = Symbol('writeFile');
 const _init = Symbol('init');
-const _checkUnused = Symbol('checkUnused');
 const _noTable = Symbol('noTable');
 
 //@template {number|string} K
