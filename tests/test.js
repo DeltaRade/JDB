@@ -22,6 +22,12 @@ for(let i in obj){
 // fetch table items as an array of objects
 console.log(x.fetchArray())
 
+
+// search the db for specific property matching
+// returns an array of objects containing key and value
+let kv=x.locate(v=>v=="doe")
+console.log(kv,kv[0],kv[0].key,kv[0].value)
+
 //compress data into jndb.dat
 x.compress()
 
@@ -34,7 +40,7 @@ let deflate=zlib.deflateSync(str)
 fs.writeFileSync('deflate.dat',deflate)
 let defdat=fs.readFileSync('deflate.dat')
 let inflate=zlib.inflateSync(defdat)
-console.log(deflate.toString())
+//console.log(deflate.toString())
 
 
 /*const fs=require('fs')

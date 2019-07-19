@@ -140,7 +140,7 @@ class Connection {
 	}
 	/**
 	 * fetch all table objects from the database directly and inserts  them into an array in the form of:`[ { key:string|number,value:any } ]`
-	 * @returns {Array<{}>}
+	 * @returns {Array<{[key:string]:any}>}
 	 */
 	fetchArray() {
 		this[_noTable]();
@@ -154,7 +154,7 @@ class Connection {
 	}
 	/**
 	 * fetch all table objects from the database directly
-	 * @returns {{}}
+	 * @returns {{[key:string]:any}}
 	 * @memberof JNDBClient
 	 */
 	fetchAll() {
@@ -186,6 +186,20 @@ class Connection {
 			return defaultValue;
 		}
 		return oldVal;
+	}
+	/**
+	 * 
+	 * @param {(value:any,key:string|number)=>boolean} fn 
+	 */
+	locate(fn){
+		let res=[]
+		let values=this.fetchAll()
+		for(let i in values){
+			if(fn(values[i],i)){
+				res.push({key:i,value:values[i]})
+			}
+		}
+		return res;
 	}
 	/**
 	 * compresses the database into a separate file called `jndb.dat`
