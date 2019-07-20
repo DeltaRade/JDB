@@ -112,7 +112,7 @@ for(let i in obj){
 // fetch table items as an array of objects
 console.log(x.fetchArray())
 
-// search the db for specific property matching
+// search the table for specific property matching
 // returns an array of objects containing key and value
 let kv=x.locate(v=>v=="doe")
 console.log(kv,kv[0],kv[0].key,kv[0].value)
