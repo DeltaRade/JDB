@@ -1,13 +1,13 @@
 const fs = require('fs');
 const Path = require('path');
+const zlib = require('zlib');
 const { EventEmitter } = require('events');
 const _defineProp = Symbol('_defineProp');
 const _writeFile = Symbol('writeFile');
 const _init = Symbol('init');
-const _checkUnused = Symbol('checkUnused');
 const _noTable = Symbol('noTable');
 
-//@template {number|string} K 
+//@template {number|string} K
 /**
  *
  * @class Connection
@@ -15,17 +15,14 @@ const _noTable = Symbol('noTable');
 class Connection {
 	/**
 	 *Creates an instance of Connection.
-	 * @param {string} table
 	 * @param {{path:'.',fileName:string}} options
 	 */
-	constructor(
-		options = { path: '.', fileName: 'jndb.json' }
-	) {
+	constructor(options = { path: '.', fileName: 'jndb.json' }) {
 		options.fileName ? '' : (options.fileName = 'jndb.json');
 		options.path ? '' : (options.path = '.');
 		this[_defineProp]('path', `${options.path}/${options.fileName}`, false);
 		this[_defineProp]('events', new EventEmitter());
-		this.events.on('write', value => {
+		this.events.on('write', (value) => {
 			let data = require(Path.resolve(this.path));
 			data = value;
 			fs.writeFileSync(this['path'], JSON.stringify(data, null, '\t'));
@@ -33,8 +30,8 @@ class Connection {
 		if (!fs.existsSync(this['path'])) {
 			fs.writeFileSync(this['path'], JSON.stringify({}, null, '\t'));
 		}
-		this[_defineProp]('lastUsedKeys', []);
 		this[_init](options);
+		return this
 	}
 	[Symbol.iterator]() {
 		// get the properties of the object
@@ -62,7 +59,7 @@ class Connection {
 	 */
 	get count() {
 		const data = require(Path.resolve(this['path']));
-		const length = Object.keys(data[this.table]).length;
+		const length = Object.keys(data[this['table']]).length;
 		return length;
 	}
 	/**
@@ -75,8 +72,8 @@ class Connection {
 	 * if(x.has('john')){
 	 *	x.use('specialUsers')
 	 *	if(x.has('john')){
-	*	console.log('john is special')
-	*	}
+	 *	console.log('john is special')
+	 *	}
 	 * }
 	 */
 	use(tableName) {
@@ -86,10 +83,11 @@ class Connection {
 			data[tableName] = {};
 			this[_writeFile](data);
 		}
+		return this;
 	}
 	/**
 	 *	deletes a key from the database
-	 * @param {K} key
+	 * @param {string|number} key
 	 * @returns {this}
 	 */
 	delete(key) {
@@ -99,7 +97,6 @@ class Connection {
 			return this;
 		}
 		delete data[this['table']][key];
-		delete this[key];
 		this[_writeFile](data);
 		return this;
 	}
@@ -122,11 +119,8 @@ class Connection {
 	 */
 	insert(key, value) {
 		this[_noTable]();
-		this[_checkUnused]();
 		const data = require(Path.resolve(this['path']));
 		data[this['table']][key] = value;
-		this[key] = value;
-		this.lastUsedKeys.push(key);
 		this[_writeFile](data);
 		return this;
 	}
@@ -137,18 +131,16 @@ class Connection {
 	 */
 	fetch(key) {
 		this[_noTable]();
-		this[_checkUnused]();
 		const data = require(Path.resolve(this['path']));
 		const val = data[this['table']][key];
 		if (!this[key] && val) {
 			this[key] = val;
 		}
-		val ? this.lastUsedKeys.push(key) : '';
 		return val || undefined;
 	}
 	/**
 	 * fetch all table objects from the database directly and inserts  them into an array in the form of:`[ { key:string|number,value:any } ]`
-	 * @returns {Array<{}>}
+	 * @returns {Array<{[key:string]:any}>}
 	 */
 	fetchArray() {
 		this[_noTable]();
@@ -162,7 +154,7 @@ class Connection {
 	}
 	/**
 	 * fetch all table objects from the database directly
-	 * @returns {{}}
+	 * @returns {{[key:string]:any}}
 	 * @memberof JNDBClient
 	 */
 	fetchAll() {
@@ -195,7 +187,41 @@ class Connection {
 		}
 		return oldVal;
 	}
-
+	/**
+	 * 
+	 * @param {(value:any,key:string|number)=>boolean} fn 
+	 */
+	locate(fn){
+		let res=[]
+		let values=this.fetchAll()
+		for(let i in values){
+			if(fn(values[i],i)){
+				res.push({key:i,value:values[i]})
+			}
+		}
+		return res;
+	}
+	/**
+	 * compresses the database into a separate file called `jndb.dat`
+	 * @returns {CompressedJSON}
+	 */
+	compress() {
+		const data = require(Path.resolve(this['path']));
+		let buff = zlib.gzipSync(JSON.stringify(data));
+		fs.writeFileSync('jndb.dat', buff);
+		return new CompressedJSON(buff);
+	}
+	/**
+	 * gets the compressed data from `jndb.dat` (if it exists)
+	 */
+	uncompress() {
+		if (!fs.existsSync(Path.resolve('./jndb.dat'))) {
+			throw new Error('jndb.dat doesnt exist to extract data from');
+		}
+		const data = fs.readFileSync(Path.resolve('./jndb.dat'));
+		let buff = zlib.gunzipSync(data);
+		return new CompressedJSON(buff);
+	}
 	[_init](options) {
 		if (options.fetchAll) {
 			this.fetchAll();
@@ -207,17 +233,6 @@ class Connection {
 			enumerable: false,
 			writable,
 		});
-	}
-	[_checkUnused]() {
-		const lastUsed = this.lastUsedKeys;
-		if (lastUsed.length >= 5) {
-			const lastvalue = lastUsed.splice(0, 1);
-			const has = lastUsed.find(x => x == lastvalue[0]);
-			if (has) {
-				return;
-			}
-			delete this[lastvalue];
-		}
 	}
 	[_writeFile](data) {
 		this.events.emit('write', data);
@@ -231,3 +246,47 @@ class Connection {
 	}
 }
 exports.Connection = Connection;
+
+class CompressedJSON {
+	constructor(buffer) {
+		Object.defineProperty(this, 'buffer', {
+			value: buffer,
+			enumerable: false,
+		});
+	}
+	get tables() {
+		let tbls = [];
+		let obj = this.object();
+		for (let i in obj) {
+			tbls.push(i);
+		}
+		return tbls;
+	}
+	/**
+	 * @returns {{}}
+	 */
+	object() {
+		return JSON.parse(this.buffer.toString());
+	}
+	/**
+	 * @returns {string}
+	 */
+	json() {
+		return this.buffer.toString();
+	}
+	/**
+	 * searches for a given key in all of the tables and returns it
+	 * @param {string} key
+	 */
+	get(key) {
+		let val = undefined;
+		let obj = this.object();
+		for (let i in obj) {
+			if (obj[i][key]) {
+				val = obj[i][key];
+				break;
+			}
+		}
+		return val;
+	}
+}

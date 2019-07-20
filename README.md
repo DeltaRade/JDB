@@ -9,6 +9,8 @@
     - [`fetch(key)`](#fetchkey)
     - [`fetchArray()`](#fetchArray)
     - [`fetchAll()`](#fetchAll)
+    - [`compress()`](#compress)
+    - [`uncompress()`](#uncompress)
 - [Usage](#Usage)
 - [Issues](#Issues)
 
@@ -20,8 +22,6 @@ stable: `npm i jndb`
 # Docs
 
 ## `class Connection`
-
-Noncache version of the latter, better for a big database
 
 ### `constructor(table, options)`
 
@@ -75,6 +75,18 @@ fetch all table objects from the database directly
 
 -   **Returns:** `{}` —
 
+### `compress()`
+
+compresses the database into a separate file called `jndb.dat`
+
+-   **Returns:** `CompressedJSON` —
+
+### `uncompress()`
+
+gets the compressed data from `jndb.bat` (if it exists)
+
+-   **Returns:** `CompressedJSON` —
+-   
 # Usage
 
 ```js
@@ -99,6 +111,17 @@ for(let i in obj){
 
 // fetch table items as an array of objects
 console.log(x.fetchArray())
+
+// search the db for specific property matching
+// returns an array of objects containing key and value
+let kv=x.locate(v=>v=="doe")
+console.log(kv,kv[0],kv[0].key,kv[0].value)
+
+//compress data into jndb.dat
+x.compress()
+
+//return uncompressed data from that file
+console.log(x.uncompress().json())
 ```
 
 # Issues
