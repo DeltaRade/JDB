@@ -168,10 +168,10 @@ class Connection {
 	}
 	/**
 	 * short-hand helper for `if(!key){Connection.insert(key,value); Connection.get(key)}`
-	 *
+	 * @template T
 	 * @param {string|number} key
-	 * @param {any} defaultValue
-	 * @returns {any}
+	 * @param {T} defaultValue
+	 * @returns {T}
 	 * @example
 	 * let db=new jndb.Connection('users')
 	 * let value=db.secure('user1',{})
@@ -263,7 +263,7 @@ class CompressedJSON {
 		return tbls;
 	}
 	/**
-	 * @returns {{}}
+	 * @returns {{[key:string] :any}}
 	 */
 	object() {
 		return JSON.parse(this.buffer.toString());

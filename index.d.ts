@@ -40,7 +40,7 @@ declare class Connection {
 	 * console.log(value)// {}
 	 *
 	 */
-	secure(key: string | number, defaultValue: any): any;
+	secure<T>(key: string | number, defaultValue: T): T;
 	/**
 	 * compresses the database into a separate file called `jndb.dat`
 	 */
