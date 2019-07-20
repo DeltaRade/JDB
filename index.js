@@ -212,7 +212,7 @@ class Connection {
 		return new CompressedJSON(buff);
 	}
 	/**
-	 * gets the compressed data from `jndb.bat` (if it exists)
+	 * gets the compressed data from `jndb.dat` (if it exists)
 	 */
 	uncompress() {
 		if (!fs.existsSync(Path.resolve('./jndb.dat'))) {
