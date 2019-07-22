@@ -40,6 +40,16 @@ let deflate=zlib.deflateSync(str)
 fs.writeFileSync('deflate.dat',deflate)
 let defdat=fs.readFileSync('deflate.dat')
 let inflate=zlib.inflateSync(defdat)
+
+
+let tbls=x.fetchAll()
+let strmd=`# Table: ${x.table}\n| key | value | type |\n|-----|-------|------|\n`
+for(let i in tbls){
+    strmd +='|'+i+'|'+tbls[i]+'|'+typeof tbls[i]+'|\n'
+}
+
+fs.writeFileSync('test.md',strmd)
+console.group(strmd)
 //console.log(deflate.toString())
 
 
