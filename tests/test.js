@@ -50,6 +50,103 @@ for(let i in tbls){
 
 fs.writeFileSync('test.md',strmd)
 console.group(strmd)
+
+let schemaStorage=[]
+let acceptedNames=['Object','String','Number','Array','Date']
+function schema(obj){
+    let _schema={}
+    for(let i in obj){
+        if(!obj[i].name){
+            throw new Error('type must be a constructor')
+        }
+        if(!acceptedNames.includes(obj[i].name)){
+            throw new Error(`invalid type '${obj[i].name}'`);
+        }
+        _schema[i]=obj[i].name
+    }
+    return _schema
+}
+function add(schema,object){
+    let obj={}
+    for(let i in object){
+        let key=i,value=object[i]
+    if(!schema[key]){
+        throw new Error(`key '${key}' does not exist on schema`)
+    }
+    if(schema[key]!==value.constructor.name){
+        throw new Error(`invalid type provided for '${key}': '${value.constructor.name}'; supported type is '${schema[key]}'`)
+    }
+    obj[key]=value
+    }
+    for(let v in schema){
+        if(!obj[v]){
+            obj[v]=null
+        }
+    }
+    //let obj=schemaStorage
+    //obj[key]=value
+    schemaStorage.push(obj)
+    return obj
+
+}
+function get(schema,key,value){
+    let [k,prop]=key.split('.')
+    //console.log(k,prop)
+    for(let i of schemaStorage){
+       if(!isSchema(schema,i)){continue}
+       //console.log(i[key],value)
+       if(prop){
+           let found=i[k][prop]||i[k].find(x=>x==prop)
+           if(found===value){
+               return i
+           }
+       }
+       if(i[key]!==value){continue}
+       return i
+    }
+}
+
+function delet(schema,key,value){
+    let [k,prop]=key.split('.')
+    //console.log(k,prop)
+    
+    for(let i in schemaStorage){
+       if(!isSchema(schema,schemaStorage[i])){continue}
+       //console.log(i[key],value)
+       if(prop){
+           let found=schemaStorage[i][k][prop]||schemaStorage[i][k].find(x=>x==prop)
+           if(found===value){
+               schemaStorage.splice(parseInt(i),1)
+           }
+       }
+       if(schemaStorage[i][key]!==value){continue}
+       schemaStorage.splice(parseInt(i),1)
+    }
+}
+function isSchema(schema,row){
+    for(let i in row){
+        if(!schema[i]){
+            return false
+        }
+    }
+    return true
+}
+
+let sch=schema({
+    init:Object,
+    ammount:Number,
+    pearls:Date,
+    any:Array
+})
+let sch2=schema({
+    pp:String
+})
+add(sch2,{pp:''})
+add(sch,{init:{id:1},ammount:1,any:['pp','ooof']})
+console.log(schemaStorage)
+console.log(get(sch,'init.id',1))
+delet(sch,'ammount',1)
+console.log(schemaStorage)
 //console.log(deflate.toString())
 
 
