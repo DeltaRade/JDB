@@ -46,7 +46,7 @@ declare class Connection {
 	 */
 	compress(): CompressedJSON;
 	/**
-	 * gets the compressed data from `jndb.bat` (if it exists)
+	 * gets the compressed data from `jndb.dat` (if it exists)
 	 */
 	uncompress(): CompressedJSON;
 }
