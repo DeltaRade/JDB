@@ -84,8 +84,7 @@ function add(schema,object){
             obj[v]=null
         }
     }
-    //let obj=schemaStorage
-    //obj[key]=value
+   
     schemaStorage.push(obj)
     return obj
 
@@ -169,15 +168,35 @@ let sch=schema({
 let sch2=schema({
     pp:String
 })
-add(sch2,{pp:''})
-add(sch,{init:{id:1},ammount:1,any:['pp','ooof']})
-//console.log(schemaStorage)
-//console.log(get(sch,'init.id',1))
-update(sch,'init.id',1,{old:true})
-//console.log(schemaStorage)
-delet(sch,'ammount',1)
-console.log(schemaStorage)
-//console.log(searchSchema(sch,'pp','pp'))
+
+let tschema=new jndb.Schema.Schema({
+    _id:String,
+    index:Number,
+    guid: String,
+	isActive: Boolean,
+	balance: String,
+    picture: String,
+	age: Number,
+	eyeColor: String,
+	name: String,
+	gender: String,
+	company: String,
+	email: String,
+	phone: String,
+	address: String,
+	about: String,
+	registered: String,
+	latitude: Number,
+	longitude: Number,
+	tags: Array,
+	friends:Array,
+	greeting: String,
+	favoriteFruit: String
+})
+let db=new jndb.Schema.DB()
+db.setSchema(tschema)
+//db.insert({id:1,mutes:{pp:{a:1}},pp:[[1],[2],{a:3}]})
+console.log(db.select('pp','ex'))
 
 //console.log(deflate.toString())
 
