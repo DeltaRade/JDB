@@ -53,6 +53,7 @@ console.group(strmd)
 
 let schemaStorage=[]
 let acceptedNames=['Object','String','Number','Array','Date']
+let typesWProps=['Object','Array']
 function schema(obj){
     let _schema={}
     for(let i in obj){
@@ -107,6 +108,32 @@ function get(schema,key,value){
 }
 
 function delet(schema,key,value){
+    let row=searchSchema(schema,key,value)
+    if(!row)return;
+    schemaStorage.splice(row.index,1)
+}
+function update(schema,key,searchValue,newValue){
+    let [k,prop]=key.split('.')
+    let row=searchSchema(schema,key,searchValue).row
+    if(!row)return;
+    if(prop){
+        checkSchemaTypes(schema,k,newValue)
+        row[k][prop]=newValue
+        return row
+    }
+    checkSchemaTypes(schema,key,newValue)
+    row[key]=newValue
+    return row
+}
+function checkSchemaTypes(schema,key,value){
+    if(!schema[key]){
+        throw new Error(`key '${key}' does not exist on schema`)
+    }
+    if(schema[key]!==value.constructor.name){
+        throw new Error(`invalid type provided for '${key}': '${value.constructor.name}'; supported type is '${schema[key]}'`)
+    }
+}
+function searchSchema(schema,key,searchValue){
     let [k,prop]=key.split('.')
     //console.log(k,prop)
     
@@ -114,13 +141,14 @@ function delet(schema,key,value){
        if(!isSchema(schema,schemaStorage[i])){continue}
        //console.log(i[key],value)
        if(prop){
+           if(!typesWProps.includes(schema[k])){throw new Error(`${k} is not an Object or Array`)}
            let found=schemaStorage[i][k][prop]||schemaStorage[i][k].find(x=>x==prop)
-           if(found===value){
-               schemaStorage.splice(parseInt(i),1)
+           if(found===searchValue){
+               return {index:parseInt(i),value:found,row:schemaStorage[i]}
            }
        }
-       if(schemaStorage[i][key]!==value){continue}
-       schemaStorage.splice(parseInt(i),1)
+       if(schemaStorage[i][key]!==searchValue){continue}
+       return {index:parseInt(i),value:schemaStorage[i][key],row:schemaStorage[i]}
     }
 }
 function isSchema(schema,row){
@@ -143,10 +171,14 @@ let sch2=schema({
 })
 add(sch2,{pp:''})
 add(sch,{init:{id:1},ammount:1,any:['pp','ooof']})
-console.log(schemaStorage)
-console.log(get(sch,'init.id',1))
+//console.log(schemaStorage)
+//console.log(get(sch,'init.id',1))
+update(sch,'init.id',1,{old:true})
+//console.log(schemaStorage)
 delet(sch,'ammount',1)
 console.log(schemaStorage)
+//console.log(searchSchema(sch,'pp','pp'))
+
 //console.log(deflate.toString())
 
 
