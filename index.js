@@ -246,7 +246,10 @@ class Connection {
 	}
 }
 exports.Connection = Connection;
-
+exports.Schema = {
+	DB: require('./schemaDB/db'),
+	Schema: require('./schemaDB/schema'),
+};
 class CompressedJSON {
 	constructor(buffer) {
 		Object.defineProperty(this, 'buffer', {
