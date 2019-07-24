@@ -31,7 +31,9 @@ declare class Connection {
 	 * @memberof JNDBClient
 	 */
 	fetchAll(): {};
-	locate(fn: (value: any, key: string | number) => boolean): Array<{key:string,value:any}>;
+	locate(
+		fn: (value: any, key: string | number) => boolean
+	): Array<{ key: string; value: any }>;
 	/**
 	 * short-hand helper for `if(!key){Connection.insert(key,value); Connection.get(key)}`
 	 * @example

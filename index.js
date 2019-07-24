@@ -31,7 +31,7 @@ class Connection {
 			fs.writeFileSync(this['path'], JSON.stringify({}, null, '\t'));
 		}
 		this[_init](options);
-		return this
+		return this;
 	}
 	[Symbol.iterator]() {
 		// get the properties of the object
@@ -188,15 +188,15 @@ class Connection {
 		return oldVal;
 	}
 	/**
-	 * 
-	 * @param {(value:any,key:string|number)=>boolean} fn 
+	 *
+	 * @param {(value:any,key:string|number)=>boolean} fn
 	 */
-	locate(fn){
-		let res=[]
-		let values=this.fetchAll()
-		for(let i in values){
-			if(fn(values[i],i)){
-				res.push({key:i,value:values[i]})
+	locate(fn) {
+		let res = [];
+		let values = this.fetchAll();
+		for (let i in values) {
+			if (fn(values[i], i)) {
+				res.push({ key: i, value: values[i] });
 			}
 		}
 		return res;
