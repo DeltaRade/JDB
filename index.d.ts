@@ -52,7 +52,37 @@ declare class Connection {
 	 */
 	uncompress(): CompressedJSON;
 }
-export { Connection };
+declare namespace Schema {
+	class Schema{
+		constructor(object:{ [key: string]: SchemaType });
+	}
+	class DB  {
+		constructor(options?: { filename: string; path: string });
+		public setSchema(schema: Schema): this;
+		public insert(object: {[key:string]:any}): { [key: string]: any };
+		public select(
+			searchKey: string,
+			searchValue: any
+		): { [key: string]: any };
+		public update(
+			searchKey: string,
+			searchValue: any,
+			newValue: any
+		): { [key: string]: any };
+		public delete(
+			searchKey: string,
+			searchValue: string
+		): { [key: string]: any };
+	}
+	type SchemaType =
+		| NumberConstructor
+		| StringConstructor
+		| ObjectConstructor
+		| BooleanConstructor
+		| DateConstructor
+		| ArrayConstructor
+}
+export { Connection, Schema };
 declare class CompressedJSON {
 	private buffer: Buffer;
 	constructor(buffer: Buffer);
