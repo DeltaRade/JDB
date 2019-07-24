@@ -52,7 +52,7 @@ fs.writeFileSync('test.md',strmd)
 console.group(strmd)
 
 let schemaStorage=[]
-let acceptedNames=['Object','String','Number','Array','Date']
+let acceptedNames=['Object','String','Number','Array','Date','Boolean']
 let typesWProps=['Object','Array']
 function schema(obj){
     let _schema={}
