@@ -53,13 +53,13 @@ declare class Connection {
 	uncompress(): CompressedJSON;
 }
 declare namespace Schema {
-	class Schema{
-		constructor(object:{ [key: string]: SchemaType });
+	class Schema {
+		constructor(object: { [key: string]: SchemaType });
 	}
-	class DB  {
+	class DB {
 		constructor(options?: { filename: string; path: string });
 		public setSchema(schema: Schema): this;
-		public insert(object: {[key:string]:any}): { [key: string]: any };
+		public insert(object: { [key: string]: any }): { [key: string]: any };
 		public select(
 			searchKey: string,
 			searchValue: any
@@ -69,6 +69,7 @@ declare namespace Schema {
 			searchValue: any,
 			newValue: any
 		): { [key: string]: any };
+		public up(obj: { [key: string]: string });
 		public delete(
 			searchKey: string,
 			searchValue: string
@@ -80,7 +81,7 @@ declare namespace Schema {
 		| ObjectConstructor
 		| BooleanConstructor
 		| DateConstructor
-		| ArrayConstructor
+		| ArrayConstructor;
 }
 export { Connection, Schema };
 declare class CompressedJSON {
