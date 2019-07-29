@@ -65,7 +65,9 @@ class DB {
 	update(key, searchValue, newValue) {
 		let [k, prop] = key.split('.');
 		let storage = require(path.resolve(this._path));
-		let row = this._searchSchema(storage, key, searchValue).row;
+		let found = this._searchSchema(storage, key, searchValue);
+		if (!found) return;
+		let row = found.row;
 		if (!row) return;
 		if (prop) {
 			this._checkSchemaTypes(k, newValue);
