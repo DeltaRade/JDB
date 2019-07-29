@@ -70,6 +70,7 @@ class DB {
 		if (prop) {
 			this._checkSchemaTypes(k, newValue);
 			row[k][prop] = newValue;
+			this._write(storage);
 			return row;
 		}
 		this._checkSchemaTypes(key, newValue);
