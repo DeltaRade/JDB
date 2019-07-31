@@ -70,8 +70,7 @@ class DB {
 		let row = found.row;
 		if (!row) return;
 		if (prop) {
-			this._checkSchemaTypes(k, newValue);
-			row[k][prop] = newValue;
+			deepModification(key,row,newValue)
 			this._write(storage);
 			return row;
 		}
@@ -164,5 +163,23 @@ class DB {
 	_write(data) {
 		this._events.emit('write', data);
 	}
+}
+/**
+ * 
+ * @param {string} path 
+ * @param {{}} obj 
+ * @param {any} newval 
+ */
+function deepModification(path,obj,newval){
+	let props=path.split('.')
+	//if(!props.length||!path)return obj
+	//if(typeof obj!='object')return obj
+	if(props[1]==undefined){ //|| obj[props[0]]==undefined
+		obj[props[0]]=newval
+	}
+	if(obj[props[0]]!=undefined&&typeof obj[props[0]]=='object'){
+		deepModification(props.slice(1).join('.'),obj[props[0]],newval)
+	}
+		
 }
 module.exports = DB;
