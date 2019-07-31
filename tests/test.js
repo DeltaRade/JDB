@@ -216,7 +216,7 @@ function deepModification(path,obj,newval){
 	let props=path.split('.')
 	//if(!props.length||!path)return obj
 	//if(typeof obj!='object')return obj
-	console.log(typeof obj[props[0]],obj[props[0]],props[1])
+	//console.log(typeof obj[props[0]],obj[props[0]],props[1])
 	if(typeof obj[props[0]]!='object'&&props[1]==undefined){
 		obj[props[0]]=newval
 	}
