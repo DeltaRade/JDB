@@ -51,124 +51,6 @@ for(let i in tbls){
 fs.writeFileSync('test.md',strmd)
 console.group(strmd)
 
-let schemaStorage=[]
-let acceptedNames=['Object','String','Number','Array','Date','Boolean']
-let typesWProps=['Object','Array']
-function schema(obj){
-    let _schema={}
-    for(let i in obj){
-        if(!obj[i].name){
-            throw new Error('type must be a constructor')
-        }
-        if(!acceptedNames.includes(obj[i].name)){
-            throw new Error(`invalid type '${obj[i].name}'`);
-        }
-        _schema[i]=obj[i].name
-    }
-    return _schema
-}
-function add(schema,object){
-    let obj={}
-    for(let i in object){
-        let key=i,value=object[i]
-    if(!schema[key]){
-        throw new Error(`key '${key}' does not exist on schema`)
-    }
-    if(schema[key]!==value.constructor.name){
-        throw new Error(`invalid type provided for '${key}': '${value.constructor.name}'; supported type is '${schema[key]}'`)
-    }
-    obj[key]=value
-    }
-    for(let v in schema){
-        if(!obj[v]){
-            obj[v]=null
-        }
-    }
-   
-    schemaStorage.push(obj)
-    return obj
-
-}
-function get(schema,key,value){
-    let [k,prop]=key.split('.')
-    //console.log(k,prop)
-    for(let i of schemaStorage){
-       if(!isSchema(schema,i)){continue}
-       //console.log(i[key],value)
-       if(prop){
-           let found=i[k][prop]||i[k].find(x=>x==prop)
-           if(found===value){
-               return i
-           }
-       }
-       if(i[key]!==value){continue}
-       return i
-    }
-}
-
-function delet(schema,key,value){
-    let row=searchSchema(schema,key,value)
-    if(!row)return;
-    schemaStorage.splice(row.index,1)
-}
-function update(schema,key,searchValue,newValue){
-    let [k,prop]=key.split('.')
-    let row=searchSchema(schema,key,searchValue).row
-    if(!row)return;
-    if(prop){
-        checkSchemaTypes(schema,k,newValue)
-        row[k][prop]=newValue
-        return row
-    }
-    checkSchemaTypes(schema,key,newValue)
-    row[key]=newValue
-    return row
-}
-function checkSchemaTypes(schema,key,value){
-    if(!schema[key]){
-        throw new Error(`key '${key}' does not exist on schema`)
-    }
-    if(schema[key]!==value.constructor.name){
-        throw new Error(`invalid type provided for '${key}': '${value.constructor.name}'; supported type is '${schema[key]}'`)
-    }
-}
-function searchSchema(schema,key,searchValue){
-    let [k,prop]=key.split('.')
-    //console.log(k,prop)
-    
-    for(let i in schemaStorage){
-       if(!isSchema(schema,schemaStorage[i])){continue}
-       //console.log(i[key],value)
-       if(prop){
-           if(!typesWProps.includes(schema[k])){throw new Error(`${k} is not an Object or Array`)}
-           let found=schemaStorage[i][k][prop]||schemaStorage[i][k].find(x=>x==prop)
-           if(found===searchValue){
-               return {index:parseInt(i),value:found,row:schemaStorage[i]}
-           }
-       }
-       if(schemaStorage[i][key]!==searchValue){continue}
-       return {index:parseInt(i),value:schemaStorage[i][key],row:schemaStorage[i]}
-    }
-}
-function isSchema(schema,row){
-    for(let i in row){
-        if(!schema[i]){
-            return false
-        }
-    }
-    return true
-}
-
-let sch=schema({
-    init:Object,
-    ammount:Number,
-    pearls:Date,
-    any:Array
-})
-let sch2=schema({
-    pp:String
-})
-
 let tschema=new jndb.Schema.Schema({
     _id:String,
     index:Number,
@@ -196,8 +78,50 @@ let tschema=new jndb.Schema.Schema({
 let db=new jndb.Schema.DB()
 db.setSchema(tschema)
 //db.insert({id:1,mutes:{pp:{a:1}},pp:[[1],[2],{a:3}]})
-console.log(db.select('pp','ex'))
 let address=db.select('_id','5d38c941593a83ae5f307fbd')
+address._id='5d38c941593a83ae5f307fbd'
+db.up(address)
+let hsstr=''
+for(let i in tschema){
+	hsstr+=i
+}
+let schemaHash=createHash(hsstr)
+let prophash=''
+for(let i in address){
+	prophash+=i+address[i]
+}
+console.log(schemaHash)
+console.log(createHash(prophash))
+let assert = require("assert");
+
+function deepEqual(a, b) {
+    try {
+	  assert.deepEqual(a, b);
+    } catch (error) {
+      if (error.name === "AssertionError"||error.code === 'ERR_ASSERTION') {
+        return false;
+      }
+      throw error;
+    }
+    return true;
+};
+function objectsAreEqual(a, b) {
+	for (var prop in a) {
+	  if (a.hasOwnProperty(prop)) {
+		if (b.hasOwnProperty(prop)) {
+		  if (typeof a[prop] === 'object') {
+			if (!objectsAreEqual(a[prop], b[prop])) return false;
+		  } else {
+			if (a[prop] !== b[prop]) return false;
+		  }
+		} else {
+		  return false;
+		}
+	  }
+	}
+	return true;
+  }
+
 /**
  * 
  * @param {string} path 
@@ -224,8 +148,16 @@ function deepModification(path,obj,newval){
 	}
 		
 }
-console.log(deepSearch('friends.0.name',address),deepModification('friends.0.name',address,'test'),address)
-
+//console.log(deepSearch('friends.0.name',address),deepModification('friends.0.name',address,'test'),address)
+console.log(deepEqual(tschema,address))
+db.update('friends.0.name','Birkenau','Burke')
+function createHash(string) {
+	let crypto=require('crypto')
+	return crypto
+		.createHash('md5')
+		.update(string, 'utf8')
+		.digest('hex');
+}
 //console.log(deflate.toString())
 
 
