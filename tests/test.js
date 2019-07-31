@@ -197,6 +197,35 @@ let db=new jndb.Schema.DB()
 db.setSchema(tschema)
 //db.insert({id:1,mutes:{pp:{a:1}},pp:[[1],[2],{a:3}]})
 console.log(db.select('pp','ex'))
+let address=db.select('_id','5d38c941593a83ae5f307fbd')
+/**
+ * 
+ * @param {string} path 
+ * @param {{}} obj 
+ */
+function deepSearch(path,obj){
+	let props=path.split('.')
+	if(!props.length||!path)return obj
+	if(typeof obj!='object')return obj
+		if(obj[props[0]]!=undefined){
+			return deepSearch(props.slice(1).join('.'),obj[props[0]])
+		}
+		
+}
+function deepModification(path,obj,newval){
+	let props=path.split('.')
+	//if(!props.length||!path)return obj
+	//if(typeof obj!='object')return obj
+	console.log(typeof obj[props[0]],obj[props[0]],props[1])
+	if(typeof obj[props[0]]!='object'&&props[1]==undefined){
+		obj[props[0]]=newval
+	}
+	if(obj[props[0]]!=undefined&&typeof obj[props[0]]=='object'){
+		deepModification(props.slice(1).join('.'),obj[props[0]],newval)
+	}
+		
+}
+console.log(deepSearch('friends.0.name',address),deepModification('friends.0.name',address,'test'),address)
 
 //console.log(deflate.toString())
 
