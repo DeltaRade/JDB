@@ -79,8 +79,7 @@ let db=new jndb.Schema.DB()
 db.setSchema(tschema)
 //db.insert({id:1,mutes:{pp:{a:1}},pp:[[1],[2],{a:3}]})
 let address=db.select('_id','5d38c941593a83ae5f307fbd')
-address._id='5d38c941593a83ae5f307fbd'
-db.up(address)
+
 let hsstr=''
 for(let i in tschema){
 	hsstr+=i
