@@ -26,6 +26,10 @@ class DB {
 		this._schema = schema;
 		return this;
 	}
+	/**
+	 * 
+	 * @param {{}} object 
+	 */
 	insert(object) {
 		let obj = {};
 		let storage = require(path.resolve(this._path));
@@ -55,13 +59,23 @@ class DB {
 		this._write(storage);
 		return obj;
 	}
+	/**
+	 * 
+	 * @param {string} key 
+	 * @param {any} value 
+	 */
 	select(key, value) {
 		let storage = require(path.resolve(this._path));
 		let row = this._searchSchema(storage, key, value);
 		if (!row) return;
 		return row.row;
 	}
-
+	/**
+	 * 
+	 * @param {string} key 
+	 * @param {any} searchValue 
+	 * @param {any} newValue 
+	 */
 	update(key, searchValue, newValue) {
 		let [k, prop] = key.split('.');
 		let storage = require(path.resolve(this._path));
@@ -79,7 +93,11 @@ class DB {
 		this._write(storage);
 		return row;
 	}
-
+	/**
+	 * 
+	 * @param {string} key 
+	 * @param {any} value 
+	 */
 	delete(key, value) {
 		let storage = require(path.resolve(this._path));
 		let row = this._searchSchema(storage, key, value);
