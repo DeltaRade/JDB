@@ -157,6 +157,9 @@ function createHash(string) {
 		.update(string, 'utf8')
 		.digest('hex');
 }
+x.events.on('debug',(msg)=>{
+	console.log(msg)
+})
 //console.log(deflate.toString())
 
 
