@@ -77,7 +77,7 @@ class Connection {
 	 * }
 	 */
 	use(tableName) {
-		this['debug'](`[debug][use] setting table to '${tableName}'`)
+		this['debug'](`[debug][use] setting table to '${tableName}'`);
 		this[_defineProp]('table', tableName, true);
 		const data = require(Path.resolve(this['path']));
 		if (!data[tableName]) {
@@ -95,10 +95,10 @@ class Connection {
 		this[_noTable]();
 		const data = require(Path.resolve(this['path']));
 		if (!data[this['table']][key]) {
-			this['debug'](`[debug][delete] key '${key}' not found`)
+			this['debug'](`[debug][delete] key '${key}' not found`);
 			return this;
 		}
-		this['debug'](`[debug][delete] deleting key '${key}'`)
+		this['debug'](`[debug][delete] deleting key '${key}'`);
 		delete data[this['table']][key];
 		this[_writeFile](data);
 		return this;
@@ -110,7 +110,7 @@ class Connection {
 	 */
 	has(key) {
 		this[_noTable]();
-		this['debug'](`[debug][has] checking if '${key}' exists`)
+		this['debug'](`[debug][has] checking if '${key}' exists`);
 		let data = require(Path.resolve(this['path']));
 		data = data[this['table']];
 		return data[key] ? true : false;
@@ -125,7 +125,11 @@ class Connection {
 		this[_noTable]();
 		const data = require(Path.resolve(this['path']));
 		data[this['table']][key] = value;
-		this['debug'](`[debug][insert] inserting value '${JSON.stringify(value)}' with key '${key}'`)
+		this['debug'](
+			`[debug][insert] inserting value '${JSON.stringify(
+				value
+			)}' with key '${key}'`
+		);
 		this[_writeFile](data);
 		return this;
 	}
@@ -136,7 +140,7 @@ class Connection {
 	 */
 	fetch(key) {
 		this[_noTable]();
-		this['debug'](`[debug][fetch] fetching value with key '${key}'`)
+		this['debug'](`[debug][fetch] fetching value with key '${key}'`);
 		const data = require(Path.resolve(this['path']));
 		const val = data[this['table']][key];
 		if (!this[key] && val) {
@@ -150,7 +154,7 @@ class Connection {
 	 */
 	fetchArray() {
 		this[_noTable]();
-		this['debug']('[debug][fetchArray] fetching array of values')
+		this['debug']('[debug][fetchArray] fetching array of values');
 		const arr = [];
 		let data = require(Path.resolve(this['path']));
 		data = data[this['table']];
@@ -166,7 +170,7 @@ class Connection {
 	 */
 	fetchAll() {
 		this[_noTable]();
-		this['debug']('[debug][fetchAll] fetching values')
+		this['debug']('[debug][fetchAll] fetching values');
 		let data = require(Path.resolve(this['path']));
 		data = data[this['table']];
 		// for(const i in data[this['table']]) {
@@ -188,14 +192,14 @@ class Connection {
 	 */
 	secure(key, defaultValue) {
 		this[_noTable]();
-		this['debug'](`[debug][secure] fetching value, key '${key}'`)
+		this['debug'](`[debug][secure] fetching value, key '${key}'`);
 		const oldVal = this.fetch(key);
 		if (!oldVal) {
-			this['debug']('[debug][secure] inserting new value')
+			this['debug']('[debug][secure] inserting new value');
 			this.insert(key, defaultValue);
 			return defaultValue;
 		}
-		this['debug'](`[debug][secure] return old value with key '${key}'`)
+		this['debug'](`[debug][secure] return old value with key '${key}'`);
 		return oldVal;
 	}
 	/**
@@ -203,7 +207,7 @@ class Connection {
 	 * @param {(value:any,key:string|number)=>boolean} fn
 	 */
 	locate(fn) {
-		this['debug'](`[debug][locate] called with function:\n${fn}`)
+		this['debug'](`[debug][locate] called with function:\n${fn}`);
 		let res = [];
 		let values = this.fetchAll();
 		for (let i in values) {
@@ -218,7 +222,7 @@ class Connection {
 	 * @returns {CompressedJSON}
 	 */
 	compress() {
-		this['debug']('[debug][compress] compressing json data')
+		this['debug']('[debug][compress] compressing json data');
 		const data = require(Path.resolve(this['path']));
 		let buff = zlib.gzipSync(JSON.stringify(data));
 		fs.writeFileSync('jndb.dat', buff);
@@ -231,7 +235,7 @@ class Connection {
 		if (!fs.existsSync(Path.resolve('./jndb.dat'))) {
 			throw new Error('jndb.dat doesnt exist to extract data from');
 		}
-		this['debug']('[debug][uncompress] uncompressing data')
+		this['debug']('[debug][uncompress] uncompressing data');
 		const data = fs.readFileSync(Path.resolve('./jndb.dat'));
 		let buff = zlib.gunzipSync(data);
 		return new CompressedJSON(buff);
@@ -250,7 +254,9 @@ class Connection {
 	}
 	[_writeFile](data) {
 		this.events.emit('write', data);
-		this['debug'](`[debug][db] writing data\n${JSON.stringify(data,null,'\t')}`)
+		this['debug'](
+			`[debug][db] writing data\n${JSON.stringify(data, null, '\t')}`
+		);
 	}
 	[_noTable]() {
 		if (!this['table']) {
@@ -259,10 +265,10 @@ class Connection {
 			);
 		}
 	}
-	['debug'](message){
-		process.nextTick(()=>{
-		this.events.emit('debug',message)
-		})
+	['debug'](message) {
+		process.nextTick(() => {
+			this.events.emit('debug', message);
+		});
 	}
 }
 exports.Connection = Connection;
