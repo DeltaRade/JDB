@@ -1,18 +1,18 @@
-- [Installation](#Installation)
-- [Docs](#Docs)
-  - [`class Connection`](#class-Connection)
-    - [`constructor(table, options)`](#constructortable-options)
+- [Installation](#installation)
+- [Docs](#docs)
+  - [`class Connection`](#class-connection)
+    - [`constructor(path)`](#constructorpath)
     - [`get count()`](#get-count)
     - [`delete(key)`](#deletekey)
     - [`has(key)`](#haskey)
     - [`insert(key, value)`](#insertkey-value)
     - [`fetch(key)`](#fetchkey)
-    - [`fetchArray()`](#fetchArray)
-    - [`fetchAll()`](#fetchAll)
+    - [`fetchArray()`](#fetcharray)
+    - [`fetchAll()`](#fetchall)
     - [`compress()`](#compress)
     - [`uncompress()`](#uncompress)
-- [Usage](#Usage)
-- [Issues](#Issues)
+- [Usage](#usage)
+- [Issues](#issues)
 
 # Installation
 
@@ -23,11 +23,10 @@ stable: `npm i jndb`
 
 ## `class Connection`
 
-### `constructor(table, options)`
+### `constructor(path)`
 
 -   **Parameters:**
-    -   `table` — `string` —
-    -   `{{path:'.',fetchAll:false}}` —
+    -   `path` — `string` —
 
 ### `get count()`
 
