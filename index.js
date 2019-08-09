@@ -15,7 +15,7 @@ const _noTable = Symbol('noTable');
 class Connection {
 	/**
 	 *Creates an instance of Connection.
-	 * @param {{path:'.',fileName:string}} options
+	 * @param {{path?:'.',fileName?:string}} [options]
 	 */
 	constructor(options = { path: '.', fileName: 'jndb.json' }) {
 		options.fileName ? '' : (options.fileName = 'jndb.json');

@@ -2,7 +2,7 @@ declare class Connection {
 	/**
 	 *Creates an instance of Connection.
 	 */
-	constructor(options?: { path: string; fileName: string });
+	constructor(options?: { path?: string; fileName?: string });
 	readonly count: number;
 	use(tableName: string): this;
 	/**
