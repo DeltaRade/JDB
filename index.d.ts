@@ -69,7 +69,6 @@ declare namespace Schema {
 			searchValue: any,
 			newValue: any
 		): { [key: string]: any };
-		public up(obj: { [key: string]: string });
 		public delete(
 			searchKey: string,
 			searchValue: string
