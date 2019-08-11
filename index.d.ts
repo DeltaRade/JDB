@@ -58,6 +58,9 @@ declare namespace Schema {
 	}
 	class DB {
 		constructor(options?: { filename: string; path: string });
+		/**
+		 * sets the schema to be used
+		 */
 		public setSchema(schema: Schema): this;
 		public insert(object: { [key: string]: any }): { [key: string]: any };
 		public select(
