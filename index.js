@@ -2,6 +2,7 @@ const fs = require('fs');
 const Path = require('path');
 const zlib = require('zlib');
 const { EventEmitter } = require('events');
+const afs=require('./afs')
 const _defineProp = Symbol('_defineProp');
 const _writeFile = Symbol('writeFile');
 const _init = Symbol('init');
@@ -22,10 +23,14 @@ class Connection {
 		options.path ? '' : (options.path = '.');
 		this[_defineProp]('path', `${options.path}/${options.fileName}`, false);
 		this[_defineProp]('events', new EventEmitter());
-		this.events.on('write', (value) => {
+		this.events.on('write', async (value) => {
 			let data = require(Path.resolve(this.path));
 			data = value;
-			fs.writeFileSync(this['path'], JSON.stringify(data, null, '\t'));
+			//fs.writeFileSync(this['path'], JSON.stringify(data, null, '\t'));
+			let fd=await afs.open(this['path'],'w')
+			await afs.fsync(fd)
+			await afs.write(fd,Buffer.from(JSON.stringify(data, null, '\t')))
+			await afs.close(fd)
 		});
 		if (!fs.existsSync(this['path'])) {
 			fs.writeFileSync(this['path'], JSON.stringify({}, null, '\t'));
