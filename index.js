@@ -2,11 +2,12 @@ const fs = require('fs');
 const Path = require('path');
 const zlib = require('zlib');
 const { EventEmitter } = require('events');
-const afs=require('./afs')
+const afs = require('./afs');
 const _defineProp = Symbol('_defineProp');
 const _writeFile = Symbol('writeFile');
 const _init = Symbol('init');
 const _noTable = Symbol('noTable');
+const engine = require('./engine').engine;
 
 //@template {number|string} K
 /**
@@ -23,18 +24,19 @@ class Connection {
 		options.path ? '' : (options.path = '.');
 		this[_defineProp]('path', `${options.path}/${options.fileName}`, false);
 		this[_defineProp]('events', new EventEmitter());
-		this.events.on('write', async (value) => {
-			let data = require(Path.resolve(this.path));
-			data = value;
-			//fs.writeFileSync(this['path'], JSON.stringify(data, null, '\t'));
-			let fd=await afs.open(this['path'],'w')
-			await afs.fsync(fd)
-			await afs.write(fd,Buffer.from(JSON.stringify(data, null, '\t')))
-			await afs.close(fd)
-		});
+		// this.events.on('write', async (value) => {
+		// 	let data = require(Path.resolve(this.path));
+		// 	data = value;
+		//
+		// 	let fd=await afs.open(this['path'],'w')
+		// 	await afs.fsync(fd)
+		// 	await afs.write(fd,Buffer.from(JSON.stringify(data, null, '\t')))
+		// 	await afs.close(fd)
+		// });
 		if (!fs.existsSync(this['path'])) {
 			fs.writeFileSync(this['path'], JSON.stringify({}, null, '\t'));
 		}
+		engine.syncData(this['path']);
 		this[_init](options);
 		return this;
 	}
@@ -63,7 +65,7 @@ class Connection {
 	 * @readonly
 	 */
 	get count() {
-		const data = require(Path.resolve(this['path']));
+		const data = engine.getParsedBuffer(this['path']);
 		const length = Object.keys(data[this['table']]).length;
 		return length;
 	}
@@ -84,7 +86,8 @@ class Connection {
 	use(tableName) {
 		this['debug'](`[debug][use] setting table to '${tableName}'`);
 		this[_defineProp]('table', tableName, true);
-		const data = require(Path.resolve(this['path']));
+		const data = engine.getParsedBuffer(this['path']);
+		console.log(data);
 		if (!data[tableName]) {
 			data[tableName] = {};
 			this[_writeFile](data);
@@ -98,7 +101,7 @@ class Connection {
 	 */
 	delete(key) {
 		this[_noTable]();
-		const data = require(Path.resolve(this['path']));
+		const data = engine.getParsedBuffer(this['path']);
 		if (!data[this['table']][key]) {
 			this['debug'](`[debug][delete] key '${key}' not found`);
 			return this;
@@ -116,7 +119,7 @@ class Connection {
 	has(key) {
 		this[_noTable]();
 		this['debug'](`[debug][has] checking if '${key}' exists`);
-		let data = require(Path.resolve(this['path']));
+		let data = engine.getParsedBuffer(this['path']);
 		data = data[this['table']];
 		return data[key] ? true : false;
 	}
@@ -128,7 +131,7 @@ class Connection {
 	 */
 	insert(key, value) {
 		this[_noTable]();
-		const data = require(Path.resolve(this['path']));
+		const data = engine.getParsedBuffer(this['path']);
 		data[this['table']][key] = value;
 		this['debug'](
 			`[debug][insert] inserting value '${JSON.stringify(
@@ -146,7 +149,7 @@ class Connection {
 	fetch(key) {
 		this[_noTable]();
 		this['debug'](`[debug][fetch] fetching value with key '${key}'`);
-		const data = require(Path.resolve(this['path']));
+		const data = engine.getParsedBuffer(this['path']);
 		const val = data[this['table']][key];
 		if (!this[key] && val) {
 			this[key] = val;
@@ -161,7 +164,7 @@ class Connection {
 		this[_noTable]();
 		this['debug']('[debug][fetchArray] fetching array of values');
 		const arr = [];
-		let data = require(Path.resolve(this['path']));
+		let data = engine.getParsedBuffer(this['path']);
 		data = data[this['table']];
 		for (const i in data) {
 			arr.push({ [i]: data[i] });
@@ -176,7 +179,7 @@ class Connection {
 	fetchAll() {
 		this[_noTable]();
 		this['debug']('[debug][fetchAll] fetching values');
-		let data = require(Path.resolve(this['path']));
+		let data = engine.getParsedBuffer(this['path']);
 		data = data[this['table']];
 		// for(const i in data[this['table']]) {
 		// this[i] = data[this['table']][i];
@@ -258,7 +261,7 @@ class Connection {
 		});
 	}
 	[_writeFile](data) {
-		this.events.emit('write', data);
+		engine.writeFile(this['path'], data);
 		this['debug'](
 			`[debug][db] writing data\n${JSON.stringify(data, null, '\t')}`
 		);
