@@ -87,7 +87,6 @@ class Connection {
 		this['debug'](`[debug][use] setting table to '${tableName}'`);
 		this[_defineProp]('table', tableName, true);
 		const data = engine.getParsedBuffer(this['path']);
-		console.log(data);
 		if (!data[tableName]) {
 			data[tableName] = {};
 			this[_writeFile](data);
