@@ -10,7 +10,13 @@ function syncData(path) {
 	if(bufferPool.has(path))return;
 	bufferPool.set(path, fs.readFileSync(path));
 }
+/**
+ * 
+ * @param {string} path 
+ * @param {object} data 
+ */
 function writeFile(path, data) {
+	bufferPool.set(path,Buffer.from(JSON.stringify(data)))
 	process.nextTick(() => {
 		events.emit('write', path, data);
 	});
