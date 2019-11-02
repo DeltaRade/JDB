@@ -28,9 +28,7 @@ function getParsedBuffer(path) {
 	return bufferPool.has(path) ? parseBuffer(bufferPool.get(path)) : undefined;
 }
 events.on('write', async (path, data) => {
-	let fd = await afs.open(path, 'w');
-	await afs.fsync(fd);
-	await afs.write(fd, Buffer.from(JSON.stringify(data, null, '\t')));
-	await afs.close(fd);
+	let dat=Buffer.from(JSON.stringify(data, null, '\t'))
+	fs.writeFileSync(path,dat);
 });
 exports.engine = { getParsedBuffer, bufferPool, writeFile, syncData };
