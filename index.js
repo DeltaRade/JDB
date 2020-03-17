@@ -2,7 +2,6 @@ const fs = require('fs');
 const Path = require('path');
 const zlib = require('zlib');
 const { EventEmitter } = require('events');
-const afs = require('./afs');
 const _defineProp = Symbol('_defineProp');
 const _writeFile = Symbol('writeFile');
 const _init = Symbol('init');
