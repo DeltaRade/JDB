@@ -1,5 +1,4 @@
 const fs = require('fs');
-const afs = require('./afs');
 const EventEmitter = require('events').EventEmitter;
 const events = new EventEmitter();
 /**
