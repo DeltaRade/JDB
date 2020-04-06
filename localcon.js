@@ -45,7 +45,6 @@ class LocalConnection {
 	 */
 	delete(key) {
 		let data = this._data;
-		console.log(this._data);
 		if (typeof key == 'string') {
 			let keys = key.split('.');
 			let len = keys.length;
@@ -58,8 +57,6 @@ class LocalConnection {
 		} else {
 			delete data[key];
 		}
-		console.log(this._data);
-		//this[_writeFile](data);
 		return this;
 	}
 	/**
@@ -103,7 +100,6 @@ class LocalConnection {
 			data[key] = value;
 		
 		}
-		//this[_writeFile](data);
 		return this;
 	}
 	/**
@@ -206,16 +202,9 @@ class LocalConnection {
 		}
 	}
 }
-let x = new LocalConnection('./test.json');
-x._data = { obj1: { a: { 1: 2 } }, obj2: {} };
-x.insert('obj1.a', { 4: 3 });
-x.save()
-console.log(x.fetch('obj1.a'))
-x.delete('obj1.a');
-console.log(x.has('obj1.a'),'\n');
-console.log(x.fetchArray(),'\n')
-console.log(x.fetchAll(),'\n')
+
 //x.save()
 function copyObject(obj) {
 	return JSON.parse(JSON.stringify(obj));
 }
+module.exports=LocalConnection
