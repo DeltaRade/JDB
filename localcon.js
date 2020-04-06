@@ -38,6 +38,9 @@ class LocalConnection {
 	save() {
 		this[_writeFile](this._data);
 	}
+	refresh(){
+		this._data=fs.readFileSync(this.path)
+	}
 	/**
 	 *	deletes a key from the database
 	 * @param {string|number} key
